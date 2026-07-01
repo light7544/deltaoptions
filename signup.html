@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create account — Options Chain</title>
+<link rel="stylesheet" href="/static/auth-style.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="brand-panel">
+    <div class="brand-row">
+      <div class="brand-logo">📈</div>
+      <div class="brand-name">Options Chain</div>
+    </div>
+    <div class="pill-tag">⚡ DATA &amp; ANALYTICS PLATFORM</div>
+    <div class="brand-headline">Create your<br>free account.</div>
+    <div class="brand-sub">
+      Live BTC options chain data from Delta Exchange — OI, buildup signals,
+      and top open-interest strikes across every expiry.
+    </div>
+    <div class="feature-list">
+      <div class="feature-item"><div class="feature-icon">🔒</div> Bank-grade security &amp; encryption</div>
+      <div class="feature-item"><div class="feature-icon">✅</div> Google or phone OTP sign-up</div>
+      <div class="feature-item"><div class="feature-icon">📊</div> Live crypto options data</div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <h1>Get started</h1>
+    <div class="sub">Create an account to access your dashboard.</div>
+
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tabGoogle">Google</button>
+      <button class="tab-btn" id="tabPhone">Phone OTP</button>
+    </div>
+
+    <!-- GOOGLE -->
+    <div id="panelGoogle">
+      <button class="google-btn" onclick="window.location.href='/auth/google/login'">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+        Sign up with Google
+      </button>
+    </div>
+
+    <!-- PHONE -->
+    <div id="panelPhone" style="display:none">
+      <label class="field-label">Full name</label>
+      <input class="field-input" id="nameInput" type="text" placeholder="Your name">
+
+      <label class="field-label">Phone number</label>
+      <input class="field-input" id="phoneInput" type="tel" placeholder="+919876543210">
+
+      <div class="otp-info" id="otpSentMsg"></div>
+
+      <div id="otpFieldWrap" style="display:none">
+        <label class="field-label">Enter OTP</label>
+        <input class="field-input" id="otpInput" type="text" placeholder="6-digit code" maxlength="6">
+      </div>
+
+      <button class="primary-btn" id="phoneActionBtn" onclick="sendOtp()">Send OTP</button>
+      <div class="error-msg" id="phoneError"></div>
+    </div>
+
+    <div class="footer-link">
+      Already have an account? <a href="/static/login.html">Sign in</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const tabGoogle = document.getElementById("tabGoogle");
+const tabPhone = document.getElementById("tabPhone");
+const panelGoogle = document.getElementById("panelGoogle");
+const panelPhone = document.getElementById("panelPhone");
+
+tabGoogle.onclick = () => {
+  tabGoogle.classList.add("active"); tabPhone.classList.remove("active");
+  panelGoogle.style.display = "block"; panelPhone.style.display = "none";
+};
+tabPhone.onclick = () => {
+  tabPhone.classList.add("active"); tabGoogle.classList.remove("active");
+  panelPhone.style.display = "block"; panelGoogle.style.display = "none";
+};
+
+let otpSent = false;
+
+async function sendOtp() {
+  const phone = document.getElementById("phoneInput").value.trim();
+  const name = document.getElementById("nameInput").value.trim();
+  const errEl = document.getElementById("phoneError");
+  errEl.classList.remove("visible");
+
+  if (!otpSent) {
+    const res = await fetch("/auth/phone/send-otp", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({phone}),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.detail || "Failed to send OTP";
+      errEl.classList.add("visible");
+      return;
+    }
+    otpSent = true;
+    document.getElementById("otpFieldWrap").style.display = "block";
+    document.getElementById("phoneActionBtn").textContent = "Verify OTP";
+    const msg = document.getElementById("otpSentMsg");
+    msg.textContent = "OTP sent to " + phone + (data.dev_otp ? " (dev mode code: " + data.dev_otp + ")" : "");
+    msg.classList.add("visible");
+  } else {
+    const otp = document.getElementById("otpInput").value.trim();
+    const res = await fetch("/auth/phone/verify-otp", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({phone, otp, name}),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.detail || "Invalid OTP";
+      errEl.classList.add("visible");
+      return;
+    }
+    window.location.href = "/";
+  }
+}
+</script>
+</body>
+</html>

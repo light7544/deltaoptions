@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY orchestration_requirements.txt .
+RUN pip install --no-cache-dir -r orchestration_requirements.txt
+
+# Copy application code
+COPY . /app/delta_algo/
+
+# Set working directory to the app root
+WORKDIR /app/delta_algo
+
+# Expose ports for the services
+EXPOSE 8000 8001
+
+# Ralph runs by default, but this is overridden in docker-compose
+CMD ["python", "ralph_loop.py"]

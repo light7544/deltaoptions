@@ -1,0 +1,28 @@
+[
+    {
+        "id": "TASK-001",
+        "description": "Scan BTC/USD for Short Strangle safety and unrealized P&L.",
+        "action": "check_positions",
+        "params": {
+            "underlying": "BTC",
+            "strikes": [65600, 69400]
+        },
+        "status": "pending"
+    },
+    {
+        "id": "TASK-002",
+        "description": "Execute Delta Neutral Adjustment if breach detected.",
+        "action": "execute_trade",
+        "params": {
+            "target_delta": 0.05
+        },
+        "status": "pending"
+    },
+    {
+        "id": "TASK-003",
+        "description": "Scan and place SL/TP for all active short positions.",
+        "action": "manage_risk",
+        "params": {},
+        "status": "pending"
+    }
+]

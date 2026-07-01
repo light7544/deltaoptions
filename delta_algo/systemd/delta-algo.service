@@ -1,0 +1,18 @@
+[Unit]
+Description=Delta Exchange Options Selling Algo
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/delta_algo
+ExecStart=/usr/bin/python3 /home/ubuntu/delta_algo/run_live.py --config /home/ubuntu/delta_algo/config/config.yaml
+Restart=on-failure
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

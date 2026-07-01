@@ -1,0 +1,29 @@
+# Databases
+*.db
+auth.db
+oi_snapshots.db
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor configs
+.vscode/
+.idea/
+
+# Local logs & temp files
+logs/
+*.log
+sample_chain.json
+
+# System files
+.DS_Store
+Thumbs.db

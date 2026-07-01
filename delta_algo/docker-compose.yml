@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  antigravity:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestration
+    command: python antigravity_service.py
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app/delta_algo
+    environment:
+      - DELTA_API_KEY=${DELTA_API_KEY}
+      - DELTA_API_SECRET=${DELTA_API_SECRET}
+    networks:
+      - gsd-network
+
+  coderabbit:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestration
+    command: python coderabbit_engine.py
+    ports:
+      - "8001:8001"
+    volumes:
+      - .:/app/delta_algo
+    networks:
+      - gsd-network
+
+  ralph-loop:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestration
+    command: python ralph_loop.py
+    depends_on:
+      - antigravity
+      - coderabbit
+    volumes:
+      - .:/app/delta_algo
+      - ./logs:/app/delta_algo/logs
+    environment:
+      - ANTIGRAVITY_URL=http://antigravity:8000
+      - CODERABBIT_URL=http://coderabbit:8001
+    networks:
+      - gsd-network
+
+networks:
+  gsd-network:
+    driver: bridge

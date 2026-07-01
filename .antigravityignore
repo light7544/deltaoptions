@@ -1,0 +1,4 @@
+# Ignore environment files so the AI cannot read your API keys
+**/.env
+**/.env.local
+**/config.yaml
