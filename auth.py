@@ -24,11 +24,15 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+from dotenv import load_dotenv
 import jwt
 from authlib.integrations.starlette_client import OAuth
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
+
+# Load environment variables from .env file if present
+load_dotenv()
 
 # ----------------------------------------------------------------------------
 # CONFIG

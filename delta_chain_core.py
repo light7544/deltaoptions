@@ -28,16 +28,92 @@ NOTE ON API FIELD NAMES:
     the FIELD MAP below in 30 seconds. Everything else is written to be
     resilient to minor key differences (uses get_first() with fallbacks).
 """
-
 import argparse
 import json
 import sqlite3
 import time
+import os
+import sys
+import atexit
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 
 import requests
+
+
+# ----------------------------------------------------------------------------
+# SINGLE INSTANCE LOCK
+# ----------------------------------------------------------------------------
+
+def is_pid_running(pid: int) -> bool:
+    """Checks if a process with the given PID is running (cross-platform)."""
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+def acquire_single_instance_lock():
+    """
+    Enforces a Single Instance Lock using a lock file to prevent concurrent runs.
+    Uses process ID (PID) checks to handle stale/zombie lock files.
+    """
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    lock_file = os.path.join(base_dir, "data_fetcher.lock")
+    my_pid = os.getpid()
+
+    # Retry a few times in case of a brief overlap during restarts
+    for attempt in range(3):
+        if not os.path.exists(lock_file):
+            break
+
+        try:
+            with open(lock_file, "r") as f:
+                content = f.read().strip()
+                pid = int(content) if content else 0
+        except (ValueError, OSError, IOError):
+            pid = 0
+
+        if pid == my_pid:
+            return
+
+        if pid > 0 and is_pid_running(pid):
+            if attempt < 2:
+                time.sleep(1)
+                continue
+            print("An instance of the data fetcher is already running!", file=sys.stderr)
+            sys.exit(1)
+        else:
+            break
+
+    # Write current PID to the lock file
+    try:
+        with open(lock_file, "w") as f:
+            f.write(str(my_pid))
+    except Exception as e:
+        print(f"Warning: Could not create lock file: {e}", file=sys.stderr)
+
+    # Register exit handler to clean up the lock file
+    def remove_lock():
+        try:
+            if os.path.exists(lock_file):
+                with open(lock_file, "r") as f:
+                    content = f.read().strip()
+                    pid = int(content) if content else 0
+                if pid == my_pid:
+                    os.remove(lock_file)
+        except Exception:
+            pass
+
+    atexit.register(remove_lock)
 
 # ----------------------------------------------------------------------------
 # CONFIG
@@ -117,17 +193,23 @@ def save_snapshot(conn, legs: list[LegSnapshot]):
     conn.commit()
 
 
-def get_previous_snapshot(conn, expiry: str, strike: float, side: str, before_ts: float) -> Optional[dict]:
-    """Most recent snapshot strictly before `before_ts` for this leg."""
+def get_previous_snapshot(conn, expiry: str, strike: float, side: str, before_ts: float, lookback_seconds: float = 3600) -> Optional[dict]:
+    """
+    Finds a snapshot for this leg. To ensure meaningful changes,
+    it tries to find a snapshot around `lookback_seconds` ago (default 1 hour).
+    If not enough history exists, it falls back to the oldest available snapshot.
+    """
+    target_ts = before_ts - lookback_seconds
     row = conn.execute(
         """SELECT ts, oi, price FROM oi_snapshots
            WHERE expiry=? AND strike=? AND side=? AND ts<?
-           ORDER BY ts DESC LIMIT 1""",
-        (expiry, strike, side, before_ts),
+           ORDER BY ABS(ts - ?) LIMIT 1""",
+        (expiry, strike, side, before_ts, target_ts),
     ).fetchone()
     if row:
         return {"ts": row[0], "oi": row[1], "price": row[2]}
     return None
+
 
 
 # ----------------------------------------------------------------------------
@@ -340,6 +422,7 @@ def build_option_chain(underlying: str = UNDERLYING, db_path: str = DB_PATH) -> 
 # ----------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    acquire_single_instance_lock()
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug-fields", action="store_true", help="Print raw ticker keys and exit")
     parser.add_argument("--underlying", default=UNDERLYING)

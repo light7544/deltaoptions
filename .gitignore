@@ -7,7 +7,7 @@ oi_snapshots.db
 venv/
 .venv/
 env/
-.env/
+.env
 
 # Python caches
 __pycache__/

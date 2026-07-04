@@ -37,7 +37,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
-from delta_chain_core import build_option_chain, UNDERLYING
+from delta_chain_core import build_option_chain, UNDERLYING, acquire_single_instance_lock
 from auth import router as auth_router, init_auth_db, get_current_user_optional, SESSION_SECRET
 
 logging.basicConfig(level=logging.INFO)
@@ -69,6 +69,7 @@ async def poll_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    acquire_single_instance_lock()
     init_auth_db()
     task = asyncio.create_task(poll_loop())
     yield
@@ -125,5 +126,5 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def index(request: Request):
     user = get_current_user_optional(request)
     if not user:
-        return RedirectResponse(url="/static/login.html")
+        return FileResponse("static/landing.html")
     return FileResponse("static/index.html")

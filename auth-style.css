@@ -1,12 +1,15 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: #eef0f3;
+  font-family: 'Inter', -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, rgba(9, 5, 20, 0.88) 0%, rgba(19, 15, 38, 0.82) 100%), url('/static/assets/hero-kraken.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #eaecef;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: 20px;
 }
 .shell {
   width: 100%;
@@ -15,13 +18,17 @@ body {
   display: flex;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  background: #fff;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(189, 92, 255, 0.15);
+  background: rgba(19, 15, 38, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(189, 92, 255, 0.25);
 }
 .brand-panel {
   flex: 1;
-  background: linear-gradient(160deg, #1c3fae 0%, #2a6fd6 45%, #17b0a7 100%);
-  color: #fff;
+  background: linear-gradient(165deg, rgba(22, 17, 46, 0.5) 0%, rgba(9, 5, 20, 0.75) 100%);
+  border-right: 1px solid rgba(189, 92, 255, 0.15);
+  color: #eaecef;
   padding: 48px 40px;
   position: relative;
   overflow: hidden;
@@ -35,7 +42,7 @@ body {
   top: -60px; right: -80px;
   width: 260px; height: 260px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.08);
+  background: rgba(189, 92, 255, 0.05);
 }
 .brand-row {
   display: flex;
@@ -45,17 +52,20 @@ body {
 .brand-logo {
   width: 40px; height: 40px;
   border-radius: 50%;
-  background: #fff;
+  background: #bd5cff;
+  color: #090514;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  font-weight: 800;
 }
-.brand-name { font-size: 19px; font-weight: 700; }
+.brand-name { font-size: 19px; font-weight: 700; color: #bd5cff; }
 .pill-tag {
   align-self: flex-start;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(189, 92, 255, 0.15);
+  border: 1px solid rgba(189, 92, 255, 0.3);
+  color: #bd5cff;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
@@ -67,10 +77,13 @@ body {
   font-weight: 800;
   line-height: 1.2;
   margin: 6px 0 0 0;
+  background: linear-gradient(135deg, #eaecef, #bd5cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .brand-sub {
   font-size: 14px;
-  opacity: 0.9;
+  color: #a8a3bd;
   line-height: 1.5;
   max-width: 380px;
 }
@@ -85,11 +98,13 @@ body {
   align-items: center;
   gap: 12px;
   font-size: 14px;
+  color: #eaecef;
 }
 .feature-icon {
   width: 30px; height: 30px;
   border-radius: 8px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(189, 92, 255, 0.15);
+  color: #bd5cff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,20 +117,22 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: rgba(19, 15, 38, 0.4);
 }
 .form-panel h1 {
   font-size: 30px;
   margin: 0 0 6px 0;
-  color: #111;
+  color: #eaecef;
 }
 .form-panel .sub {
-  color: #666;
+  color: #a8a3bd;
   font-size: 14px;
   margin-bottom: 26px;
 }
 .tab-switch {
   display: flex;
-  background: #f2f3f5;
+  background: rgba(22, 17, 46, 0.6);
+  border: 1px solid rgba(189, 92, 255, 0.2);
   border-radius: 10px;
   padding: 4px;
   margin-bottom: 24px;
@@ -128,33 +145,37 @@ body {
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #666;
+  color: #a8a3bd;
   cursor: pointer;
 }
 .tab-btn.active {
-  background: linear-gradient(90deg, #2a52d6, #17a6a0);
+  background: linear-gradient(90deg, #bd5cff, #a855f7);
   color: #fff;
 }
 .google-btn {
   width: 100%;
   padding: 13px 0;
   border-radius: 10px;
-  border: 1px solid #dcdfe4;
-  background: #fff;
+  border: 1px solid rgba(189, 92, 255, 0.2);
+  background: rgba(22, 17, 46, 0.6);
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: #eaecef;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.google-btn:hover { background: #f7f8fa; }
+.google-btn:hover {
+  background: rgba(27, 19, 56, 0.8);
+  border-color: #bd5cff;
+}
 .field-label {
   font-size: 13px;
   font-weight: 600;
-  color: #222;
+  color: #eaecef;
   margin: 18px 0 6px 0;
   display: block;
 }
@@ -162,31 +183,43 @@ body {
   width: 100%;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid #dcdfe4;
+  border: 1px solid rgba(189, 92, 255, 0.2);
+  background-color: rgba(22, 17, 46, 0.5);
+  color: #eaecef;
   font-size: 14px;
   outline: none;
+  transition: all 0.2s ease;
 }
-.field-input:focus { border-color: #2a6fd6; }
+.field-input:focus {
+  border-color: #bd5cff;
+  box-shadow: 0 0 10px rgba(189, 92, 255, 0.25);
+}
 .primary-btn {
   width: 100%;
   margin-top: 20px;
   padding: 13px 0;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(90deg, #2a52d6, #17a6a0);
+  background: linear-gradient(90deg, #bd5cff, #a855f7);
   color: #fff;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 0 15px rgba(189, 92, 255, 0.3);
+  transition: all 0.2s ease;
+}
+.primary-btn:hover:not(:disabled) {
+  box-shadow: 0 0 25px rgba(189, 92, 255, 0.5);
+  transform: translateY(-1px);
 }
 .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .otp-info {
-  background: #eef4ff;
-  border: 1px solid #d6e4fb;
+  background: rgba(189, 92, 255, 0.1);
+  border: 1px solid rgba(189, 92, 255, 0.3);
   border-radius: 10px;
   padding: 12px 14px;
   font-size: 13px;
-  color: #2a52d6;
+  color: #bd5cff;
   margin-top: 16px;
   display: none;
 }
@@ -194,12 +227,12 @@ body {
 .footer-link {
   text-align: center;
   font-size: 13px;
-  color: #666;
+  color: #a8a3bd;
   margin-top: 22px;
 }
-.footer-link a { color: #2a52d6; font-weight: 600; text-decoration: none; }
+.footer-link a { color: #bd5cff; font-weight: 600; text-decoration: none; }
 .error-msg {
-  color: #c0392b;
+  color: #f6465d;
   font-size: 13px;
   margin-top: 10px;
   display: none;
@@ -209,7 +242,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #999;
+  color: #a8a3bd;
   font-size: 12px;
   margin: 20px 0;
 }
@@ -217,9 +250,9 @@ body {
   content: "";
   flex: 1;
   height: 1px;
-  background: #e3e5e9;
+  background: rgba(189, 92, 255, 0.15);
 }
 @media (max-width: 800px) {
   .shell { flex-direction: column; }
-  .brand-panel { padding: 32px; }
+  .brand-panel { padding: 32px; border-right: none; border-bottom: 1px solid rgba(189, 92, 255, 0.15); }
 }

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options Chain Matrix — Live Delta Signals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/auth-style.css?v=2">
+<style>
+  body {
+    background: radial-gradient(circle at 50% 0%, rgba(189, 92, 255, 0.15) 0%, rgba(9, 5, 20, 0) 70%), #090514 !important;
+    background-size: auto !important;
+    padding: 0 !important;
+  }
+
+  .landing-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+  }
+
+  /* Header style */
+  .landing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    width: 100%;
+  }
+
+  .landing-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 20px;
+    color: #bd5cff;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .landing-brand span {
+    color: #eaecef;
+  }
+
+  .btn-signin {
+    background: #bd5cff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 700;
+    color: #090514;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 0 15px rgba(189, 92, 255, 0.4);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-signin:hover {
+    box-shadow: 0 0 25px rgba(189, 92, 255, 0.6);
+    transform: translateY(-1px);
+  }
+
+  /* Main Landing Hero Content - Centered Overlay Stack */
+  .landing-hero {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px 80px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+  }
+
+  .hero-header-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-tag {
+    background: rgba(189, 92, 255, 0.12);
+    border: 1px solid rgba(189, 92, 255, 0.3);
+    color: #bd5cff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  .hero-title {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 0px;
+    background: linear-gradient(135deg, #ffffff 40%, #bd5cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+    max-width: 800px;
+  }
+
+  /* Full Screen Background Image Layer */
+  .landing-bg-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .landing-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .landing-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, 
+      rgba(9, 5, 20, 0.95) 0%, 
+      rgba(9, 5, 20, 0.7) 20%, 
+      rgba(9, 5, 20, 0.7) 80%, 
+      rgba(9, 5, 20, 0.95) 100%
+    );
+    z-index: 1;
+  }
+
+  /* Bottom Section: Conversion Footer */
+  .hero-footer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    color: #a8a3bd;
+    margin-bottom: 32px;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  /* Responsive adjustments */
+  @media (min-width: 768px) {
+    .landing-hero {
+      padding: 60px 24px 100px 24px;
+    }
+    .hero-title {
+      font-size: 56px;
+    }
+    .hero-subtitle {
+      font-size: 20px;
+      max-width: 700px;
+    }
+  }
+
+  /* CTA Input Bar */
+  .cta-form {
+    display: flex;
+    width: 100%;
+    max-width: 580px;
+    gap: 12px;
+    background: rgba(19, 15, 38, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(189, 92, 255, 0.15);
+    padding: 8px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .cta-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .cta-input::placeholder {
+    color: #848e9c;
+  }
+
+  .btn-get-started {
+    background: #bd5cff;
+    color: #090514;
+    border: none;
+    font-weight: 700;
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 14px 28px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(189, 92, 255, 0.4);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-get-started:hover {
+    box-shadow: 0 0 25px rgba(189, 92, 255, 0.6);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 600px) {
+    .cta-form {
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      gap: 16px;
+    }
+    .cta-input {
+      background: rgba(19, 15, 38, 0.8);
+      border: 1px solid rgba(189, 92, 255, 0.25);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .btn-get-started {
+      justify-content: center;
+      padding: 16px;
+      border-radius: 10px;
+    }
+  }
+
+  /* Modal Overlay Style */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 3, 10, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  /* Adjust shell for modal display */
+  .modal-overlay .shell {
+    position: relative;
+    max-width: 900px;
+    min-height: 560px;
+    transform: scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-overlay.active .shell {
+    transform: scale(1);
+  }
+
+  /* Close Button on Modal */
+  .modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(189, 92, 255, 0.1);
+    border: 1px solid rgba(189, 92, 255, 0.2);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: #eaecef;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 100;
+  }
+
+  .modal-close-btn:hover {
+    background: #bd5cff;
+    color: #090514;
+    box-shadow: 0 0 10px rgba(189, 92, 255, 0.5);
+  }
+
+  .toggle-link {
+    color: #bd5cff;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .toggle-link:hover {
+    color: #d182ff;
+  }
+
+  .nav-link {
+    color: #a8a3bd;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.2s;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  .nav-link:hover, .nav-link.active {
+    color: #bd5cff;
+    text-shadow: 0 0 10px rgba(189, 92, 255, 0.4);
+  }
+
+  /* Fade transitions for normal/homeOnly views */
+  .hero-header-section, .hero-footer-section {
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .landing-bg-overlay {
+    transition: opacity 0.5s ease-in-out;
+  }
+</style>
+</head>
+<body>
+
+<div class="landing-wrapper">
+  <!-- Background Image Layer -->
+  <div class="landing-bg-container">
+    <div class="landing-bg-overlay"></div>
+    <img src="/static/assets/hero-kraken.jpg" alt="Kraken Backdrop" class="landing-bg-image">
+  </div>
+
+  <!-- Top bar -->
+  <header class="landing-header">
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <a href="#" class="landing-brand" onclick="setViewMode('normal', event)">
+        Options<span>Chain</span>
+      </a>
+      <a href="#" class="nav-link" id="navHome" onclick="toggleHomeView(event)">Home</a>
+    </div>
+    <button class="btn-signin" onclick="openAuthModal('login')">Sign In</button>
+  </header>
+
+  <!-- Hero Content -->
+  <main class="landing-hero">
+    <!-- Top Section: Heading Hook -->
+    <div class="hero-header-section">
+      <div class="hero-tag">⚡ Live Delta Matrix</div>
+      <h1 class="hero-title">Unlimited options data, delta signals, and more.</h1>
+    </div>
+
+    <!-- Bottom Section: Conversion Footer -->
+    <div class="hero-footer-section">
+      <p class="hero-subtitle">
+        Analyze real-time BTC &amp; ETH Call/Put Open Interest, Volume ranks, and market buildup signals directly from Delta Exchange.
+      </p>
+      
+      <div class="cta-form">
+        <input type="tel" class="cta-input" id="landingPhone" placeholder="Enter phone number">
+        <button class="btn-get-started" onclick="startWithPhone()">
+          Get Started
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M2 2L8 8L2 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal Dialog containing the split card -->
+<div class="modal-overlay" id="authModal" onclick="handleOutsideClick(event)">
+  <div class="shell">
+    <button class="modal-close-btn" onclick="closeAuthModal()">✕</button>
+
+    <!-- Brand Panel (Left Screen) -->
+    <div class="brand-panel">
+      <div class="brand-row">
+        <div class="brand-logo">📈</div>
+        <div class="brand-name">Options Chain</div>
+      </div>
+      <div class="pill-tag">⚡ DATA &amp; ANALYTICS PLATFORM</div>
+      <div class="brand-headline" id="authBrandHeadline">Secure sign-in<br>to your account.</div>
+      <div class="brand-sub">
+        Live crypto options chain data from Delta Exchange — OI, buildup signals,
+        and top open-interest strikes across every expiry.
+      </div>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">🔒</div> Bank-grade security &amp; encryption</div>
+        <div class="feature-item"><div class="feature-icon">✅</div> Google or phone OTP auth</div>
+        <div class="feature-item"><div class="feature-icon">📊</div> Live crypto options data</div>
+      </div>
+    </div>
+
+    <!-- Form Panel (Right Screen) -->
+    <div class="form-panel">
+      <h1 id="authTitle">Welcome back</h1>
+      <div class="sub" id="authSubtitle">Sign in to continue to your dashboard.</div>
+
+      <div class="tab-switch">
+        <button class="tab-btn active" id="tabGoogle">Google</button>
+        <button class="tab-btn" id="tabPhone">Phone OTP</button>
+      </div>
+
+      <!-- GOOGLE AUTH PANEL -->
+      <div id="panelGoogle">
+        <button class="google-btn" onclick="window.location.href='/auth/google/login'">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.98v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.98A9 9 0 0 0 0 9c0 1.45.35 2.83.98 4.03l2.97-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .98 4.97l2.97 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+          <span id="googleBtnText">Continue with Google</span>
+        </button>
+      </div>
+
+      <!-- PHONE OTP PANEL -->
+      <div id="panelPhone" style="display:none">
+        <div id="fullNameWrap" style="display:none">
+          <label class="field-label">Full name</label>
+          <input class="field-input" id="nameInput" type="text" placeholder="Your name">
+        </div>
+
+        <label class="field-label">Phone number</label>
+        <input class="field-input" id="phoneInput" type="tel" placeholder="+919876543210">
+
+        <div class="otp-info" id="otpSentMsg"></div>
+
+        <div id="otpFieldWrap" style="display:none">
+          <label class="field-label">Enter OTP</label>
+          <input class="field-input" id="otpInput" type="text" placeholder="6-digit code" maxlength="6">
+        </div>
+
+        <button class="primary-btn" id="phoneActionBtn" onclick="sendOtp()">Send OTP</button>
+        <div class="error-msg" id="phoneError"></div>
+      </div>
+
+      <div class="footer-link" id="authFooter">
+        Don't have an account? <span class="toggle-link" onclick="setMode('signup')">Create an account</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentMode = 'login'; // 'login' or 'signup'
+const authModal = document.getElementById("authModal");
+
+const tabGoogle = document.getElementById("tabGoogle");
+const tabPhone = document.getElementById("tabPhone");
+const panelGoogle = document.getElementById("panelGoogle");
+const panelPhone = document.getElementById("panelPhone");
+
+// Tab toggles
+tabGoogle.onclick = () => {
+  tabGoogle.classList.add("active"); tabPhone.classList.remove("active");
+  panelGoogle.style.display = "block"; panelPhone.style.display = "none";
+};
+tabPhone.onclick = () => {
+  tabPhone.classList.add("active"); tabGoogle.classList.remove("active");
+  panelPhone.style.display = "block"; panelGoogle.style.display = "none";
+};
+
+// Modal handlers
+function openAuthModal(mode) {
+  setViewMode('normal');
+  setMode(mode || 'login');
+  authModal.classList.add("active");
+}
+
+function closeAuthModal() {
+  authModal.classList.remove("active");
+  // reset OTP flow state
+  otpSent = false;
+  document.getElementById("otpFieldWrap").style.display = "none";
+  document.getElementById("phoneActionBtn").textContent = "Send OTP";
+  document.getElementById("phoneError").classList.remove("visible");
+  document.getElementById("otpSentMsg").classList.remove("visible");
+  document.getElementById("otpInput").value = "";
+}
+
+function handleOutsideClick(event) {
+  if (event.target === authModal) {
+    closeAuthModal();
+  }
+}
+
+// Prefill and start phone flow from CTA
+function startWithPhone() {
+  const landingVal = document.getElementById("landingPhone").value.trim();
+  if (landingVal) {
+    document.getElementById("phoneInput").value = landingVal;
+    openAuthModal('signup');
+    // auto trigger phone tab click
+    tabPhone.click();
+  } else {
+    openAuthModal('login');
+  }
+}
+
+// Toggle Login / Signup Mode contents
+function setMode(mode) {
+  currentMode = mode;
+  const authTitle = document.getElementById("authTitle");
+  const authSubtitle = document.getElementById("authSubtitle");
+  const authBrandHeadline = document.getElementById("authBrandHeadline");
+  const googleBtnText = document.getElementById("googleBtnText");
+  const fullNameWrap = document.getElementById("fullNameWrap");
+  const authFooter = document.getElementById("authFooter");
+
+  if (mode === 'signup') {
+    authTitle.textContent = "Get started";
+    authSubtitle.textContent = "Create an account to access your dashboard.";
+    authBrandHeadline.innerHTML = "Create your<br>free account.";
+    googleBtnText.textContent = "Sign up with Google";
+    fullNameWrap.style.display = "block";
+    authFooter.innerHTML = `Already have an account? <span class="toggle-link" onclick="setMode('login')">Sign in</span>`;
+  } else {
+    authTitle.textContent = "Welcome back";
+    authSubtitle.textContent = "Sign in to continue to your dashboard.";
+    authBrandHeadline.innerHTML = "Secure sign-in<br>to your account.";
+    googleBtnText.textContent = "Continue with Google";
+    fullNameWrap.style.display = "none";
+    authFooter.innerHTML = `Don't have an account? <span class="toggle-link" onclick="setMode('signup')">Create an account</span>`;
+  }
+  
+  // Reset any error/success UI states from previous tabs
+  document.getElementById("phoneError").classList.remove("visible");
+  document.getElementById("otpSentMsg").classList.remove("visible");
+}
+
+// Auth flow API logic
+let otpSent = false;
+
+async function sendOtp() {
+  const phone = document.getElementById("phoneInput").value.trim();
+  const name = document.getElementById("nameInput").value.trim();
+  const errEl = document.getElementById("phoneError");
+  errEl.classList.remove("visible");
+
+  if (!otpSent) {
+    const res = await fetch("/auth/phone/send-otp", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({phone}),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.detail || "Failed to send OTP";
+      errEl.classList.add("visible");
+      return;
+    }
+    otpSent = true;
+    document.getElementById("otpFieldWrap").style.display = "block";
+    document.getElementById("phoneActionBtn").textContent = "Verify OTP";
+    const msg = document.getElementById("otpSentMsg");
+    msg.textContent = "OTP sent to " + phone + (data.dev_otp ? " (dev mode code: " + data.dev_otp + ")" : "");
+    msg.classList.add("visible");
+  } else {
+    const otp = document.getElementById("otpInput").value.trim();
+    const bodyObj = {phone, otp};
+    if (currentMode === 'signup') {
+      bodyObj.name = name;
+    }
+    
+    const res = await fetch("/auth/phone/verify-otp", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(bodyObj),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.detail || "Invalid OTP";
+      errEl.classList.add("visible");
+      return;
+    }
+    window.location.href = "/";
+  }
+}
+
+// Home navigation and background view toggling logic
+let isHomeOnly = false;
+
+function toggleHomeView(event) {
+  if (event) event.preventDefault();
+  isHomeOnly = !isHomeOnly;
+  updateViewMode();
+}
+
+function setViewMode(mode, event) {
+  if (event) event.preventDefault();
+  isHomeOnly = (mode === 'homeOnly');
+  updateViewMode();
+}
+
+function updateViewMode() {
+  const headerSection = document.querySelector(".hero-header-section");
+  const footerSection = document.querySelector(".hero-footer-section");
+  const bgOverlay = document.querySelector(".landing-bg-overlay");
+  const navHome = document.getElementById("navHome");
+
+  if (isHomeOnly) {
+    headerSection.style.opacity = "0";
+    headerSection.style.pointerEvents = "none";
+    headerSection.style.transform = "translateY(-20px)";
+    
+    footerSection.style.opacity = "0";
+    footerSection.style.pointerEvents = "none";
+    footerSection.style.transform = "translateY(20px)";
+    
+    bgOverlay.style.opacity = "0"; // remove dark overlay to render pristine full image
+    navHome.classList.add("active");
+  } else {
+    headerSection.style.opacity = "1";
+    headerSection.style.pointerEvents = "auto";
+    headerSection.style.transform = "translateY(0)";
+    
+    footerSection.style.opacity = "1";
+    footerSection.style.pointerEvents = "auto";
+    footerSection.style.transform = "translateY(0)";
+    
+    bgOverlay.style.opacity = "1"; // restore dark overlay for readability
+    navHome.classList.remove("active");
+  }
+}
+</script>
+</body>
+</html>

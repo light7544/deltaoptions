@@ -2,24 +2,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
 :root {
-    --bg-color: #050810;
-    --panel-bg: linear-gradient(145deg, rgba(16, 22, 36, 0.7) 0%, rgba(10, 13, 20, 0.9) 100%);
-    --panel-border: rgba(255, 255, 255, 0.08);
-    --panel-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    --bg-color: #090514;
+    --panel-bg: linear-gradient(145deg, rgba(19, 15, 38, 0.7) 0%, rgba(11, 7, 26, 0.9) 100%);
+    --panel-border: rgba(46, 31, 77, 0.5);
+    --panel-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     
     --text-primary: #f0f6fc;
     --text-secondary: #9daac0;
     
     /* Neon Gradients */
-    --accent: #3b82f6;
-    --accent-glow: rgba(59, 130, 246, 0.4);
-    --accent-gradient: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    --accent: #bd5cff;
+    --accent-glow: rgba(189, 92, 255, 0.4);
+    --accent-gradient: linear-gradient(135deg, #bd5cff 0%, #a855f7 100%);
     
-    --green: #10b981;
-    --green-glow: rgba(16, 185, 129, 0.4);
+    --green: #0ecb81;
+    --green-glow: rgba(14, 203, 129, 0.4);
     
-    --red: #f43f5e;
-    --red-glow: rgba(244, 63, 94, 0.4);
+    --red: #f6465d;
+    --red-glow: rgba(246, 70, 93, 0.4);
     
     --font-sans: 'Outfit', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -37,8 +37,8 @@ body {
     position: relative;
     overflow-x: hidden;
     background-image: 
-        radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.1), transparent 25%),
-        radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08), transparent 25%);
+        radial-gradient(circle at 15% 50%, rgba(189, 92, 255, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(14, 203, 129, 0.05), transparent 25%);
     background-attachment: fixed;
 }
 
@@ -46,8 +46,8 @@ body {
 .glass-bg {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: 
-        radial-gradient(circle at 50% 100%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 0%, rgba(244, 63, 94, 0.04) 0%, transparent 40%);
+        radial-gradient(circle at 50% 100%, rgba(189, 92, 255, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 0%, rgba(246, 70, 93, 0.04) 0%, transparent 40%);
     z-index: -1; pointer-events: none;
     animation: ambientShift 20s ease-in-out infinite alternate;
 }
@@ -206,13 +206,13 @@ h2 { font-size: 1.15rem; font-weight: 600; color: var(--text-primary); display: 
 
 .text-green { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.2); }
 .text-red { color: #f43f5e; text-shadow: 0 0 10px rgba(244, 63, 94, 0.2); }
-.text-blue { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.2); }
+.text-blue { color: #bd5cff; text-shadow: 0 0 10px rgba(189, 92, 255, 0.2); }
 
 /* Option Chain Specifics */
 .scroll-container { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 200px); padding-right: 5px; }
 
-.chain-table th { position: sticky; top: 0; background: rgba(16, 22, 36, 0.95); z-index: 20; backdrop-filter: blur(10px); }
-.chain-table .sub-header th { top: 38px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(10, 13, 20, 0.95); }
+.chain-table th { position: sticky; top: 0; background: rgba(19, 15, 38, 0.95); z-index: 20; backdrop-filter: blur(10px); }
+.chain-table .sub-header th { top: 38px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); background: rgba(11, 7, 26, 0.95); }
 
 .call-header { color: #34d399 !important; text-align: center !important; border-bottom: 2px solid #34d399; background: rgba(16, 185, 129, 0.05) !important;}
 .put-header { color: #f43f5e !important; text-align: center !important; border-bottom: 2px solid #f43f5e; background: rgba(244, 63, 94, 0.05) !important;}
@@ -230,8 +230,8 @@ h2 { font-size: 1.15rem; font-weight: 600; color: var(--text-primary); display: 
     text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1rem;
 }
 
-.row-atm { background: rgba(59, 130, 246, 0.06); box-shadow: inset 0 0 1px #3b82f6;}
-.row-atm:hover { background: rgba(59, 130, 246, 0.12); }
+.row-atm { background: rgba(189, 92, 255, 0.06); box-shadow: inset 0 0 1px #bd5cff;}
+.row-atm:hover { background: rgba(189, 92, 255, 0.12); }
 
 .c-bid, .c-ask, .p-bid, .p-ask { color: #f0f6fc; }
 .c-delta, .p-delta { color: #9daac0; }
