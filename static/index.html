@@ -1818,6 +1818,11 @@
         <li class="nav-item">
           <a class="nav-link" id="gammaMapTab" href="/gamma-map" onclick="showGammaMap(event)">Gamma Map</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" id="oiNavBtn" href="#oi-section" onclick="scrollToOiSection(event)" style="background: rgba(79, 70, 229, 0.22); border: 1px solid rgba(129, 140, 248, 0.4); color: #c7d2fe; padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; margin-left: 6px; transition: all 0.2s;">
+            📊 Options Open Interest & Change in OI
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -1887,6 +1892,73 @@
     </div>
 
     <div class="metrics" id="metrics"></div>
+
+    <!-- Options Open Interest & Change in OI Grid -->
+    <div id="oi-section" class="oi-dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 20px; color: #fff; font-family: 'Inter', sans-serif;">
+        
+        <!-- 15-Minute Card Container -->
+        <div class="oi-card" style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 6px;">⚡ 15-Minute Change in OI</h3>
+                <span style="font-size: 11px; font-weight: 600; background: rgba(79, 70, 229, 0.25); color: #a5b4fc; border: 1px solid rgba(129, 140, 248, 0.3); padding: 3px 9px; border-radius: 12px;">Intraday Scalping</span>
+            </div>
+            
+            <!-- Call OI Box -->
+            <div style="background: rgba(6, 78, 59, 0.25); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 14px; margin-bottom: 12px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">Call OI Change</div>
+                <div style="font-size: 22px; font-weight: bold; color: #34d399; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">
+                    <span id="oi-15m-call">2.55M</span> <span id="oi-15m-call-pct" style="font-size: 14px; font-weight: 600;">+22.63%</span>
+                </div>
+                <div id="oi-15m-call-status" style="font-size: 12px; color: #94a3b8;">Increasing selling pressure</div>
+            </div>
+
+            <!-- Put OI Box -->
+            <div style="background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; padding: 14px; margin-bottom: 14px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">Put OI Change</div>
+                <div style="font-size: 22px; font-weight: bold; color: #f87171; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">
+                    <span id="oi-15m-put">-971.5K</span> <span id="oi-15m-put-pct" style="font-size: 14px; font-weight: 600;">-7.32%</span>
+                </div>
+                <div id="oi-15m-put-status" style="font-size: 12px; color: #94a3b8;">Decreasing bullish sentiment</div>
+            </div>
+
+            <div style="font-size: 11px; color: #64748b; border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; justify-content: space-between;">
+                <span>Last updated: <span id="15m-time" style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">12:15:38 am</span></span>
+                <span style="color: #64748b;">Updates every 15 min</span>
+            </div>
+        </div>
+
+        <!-- 1-Hour Card Container -->
+        <div class="oi-card" style="background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #e2e8f0; display: flex; align-items: center; gap: 6px;">📈 1-Hour Change in OI</h3>
+                <span style="font-size: 11px; font-weight: 600; background: rgba(168, 85, 247, 0.25); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); padding: 3px 9px; border-radius: 12px;">Swing & Trend Following</span>
+            </div>
+            
+            <!-- Call OI Box -->
+            <div style="background: rgba(6, 78, 59, 0.25); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 14px; margin-bottom: 12px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">Call OI Change</div>
+                <div style="font-size: 22px; font-weight: bold; color: #34d399; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">
+                    <span id="oi-1h-call">2.55M</span> <span id="oi-1h-call-pct" style="font-size: 14px; font-weight: 600;">+22.63%</span>
+                </div>
+                <div id="oi-1h-call-status" style="font-size: 12px; color: #94a3b8;">Building bearish trend</div>
+            </div>
+
+            <!-- Put OI Box -->
+            <div style="background: rgba(127, 29, 29, 0.25); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; padding: 14px; margin-bottom: 14px;">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: 500;">Put OI Change</div>
+                <div style="font-size: 22px; font-weight: bold; color: #f87171; margin: 4px 0; font-family: 'JetBrains Mono', monospace;">
+                    <span id="oi-1h-put">-971.5K</span> <span id="oi-1h-put-pct" style="font-size: 14px; font-weight: 600;">-7.32%</span>
+                </div>
+                <div id="oi-1h-put-status" style="font-size: 12px; color: #94a3b8;">Weakening bullish trend</div>
+            </div>
+
+            <div style="font-size: 11px; color: #64748b; border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; justify-content: space-between;">
+                <span>Last updated: <span id="1h-time" style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">12:15:38 am</span></span>
+                <span style="color: #64748b;">Tracks hourly changes</span>
+            </div>
+        </div>
+
+    </div>
 
     <div class="tabs-container">
       <div class="tabs-label">Expiry Date</div>
@@ -5054,10 +5126,70 @@ async function refreshAll() {
   }
 }
 
+function scrollToOiSection(event) {
+  if (event) event.preventDefault();
+  showOptionsChain();
+  setTimeout(() => {
+    const el = document.getElementById('oi-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+async function fetchOIChanges() {
+  try {
+    const response = await fetch('/api/oi-changes');
+    const data = await response.json();
+    if (data.fifteen_min) {
+      const d15 = data.fifteen_min;
+      const elCall = document.getElementById('oi-15m-call');
+      if (elCall) elCall.innerText = d15.call_oi;
+      const elCallPct = document.getElementById('oi-15m-call-pct');
+      if (elCallPct) elCallPct.innerText = d15.call_change;
+      const elCallSt = document.getElementById('oi-15m-call-status');
+      if (elCallSt) elCallSt.innerText = d15.call_status;
+
+      const elPut = document.getElementById('oi-15m-put');
+      if (elPut) elPut.innerText = d15.put_oi;
+      const elPutPct = document.getElementById('oi-15m-put-pct');
+      if (elPutPct) elPutPct.innerText = d15.put_change;
+      const elPutSt = document.getElementById('oi-15m-put-status');
+      if (elPutSt) elPutSt.innerText = d15.put_status;
+
+      const elTime15 = document.getElementById('15m-time');
+      if (elTime15 && d15.last_updated) elTime15.innerText = d15.last_updated;
+    }
+    if (data.one_hour) {
+      const d1h = data.one_hour;
+      const elCall = document.getElementById('oi-1h-call');
+      if (elCall) elCall.innerText = d1h.call_oi;
+      const elCallPct = document.getElementById('oi-1h-call-pct');
+      if (elCallPct) elCallPct.innerText = d1h.call_change;
+      const elCallSt = document.getElementById('oi-1h-call-status');
+      if (elCallSt) elCallSt.innerText = d1h.call_status;
+
+      const elPut = document.getElementById('oi-1h-put');
+      if (elPut) elPut.innerText = d1h.put_oi;
+      const elPutPct = document.getElementById('oi-1h-put-pct');
+      if (elPutPct) elPutPct.innerText = d1h.put_change;
+      const elPutSt = document.getElementById('oi-1h-put-status');
+      if (elPutSt) elPutSt.innerText = d1h.put_status;
+
+      const elTime1h = document.getElementById('1h-time');
+      if (elTime1h && d1h.last_updated) elTime1h.innerText = d1h.last_updated;
+    }
+  } catch (err) {
+    console.warn("Failed to load OI changes", err);
+  }
+}
+
 // Initial Loads
 loadUser();
 refreshAll();
 updateTickerPrices();
+fetchOIChanges();
+setInterval(fetchOIChanges, 30000);
 
 // Check if direct link to Super Charts, Algo Levels, Gamma Map, or AI signals
 if (window.location.pathname === "/super-charts" || window.location.hash === "#super-charts" || window.location.hash === "#charts") {
