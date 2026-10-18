@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Delta Options Chain — Dashboard</title>
+<title>Quant Flow — Options Chain Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2780,7 +2780,7 @@
           🧠 Why & How This Algo Signal Was Generated
         </div>
         <p id="algoBasisExplanation" style="font-size:13px; line-height:1.6; color:#cbd5e1; margin:0;">
-          Analyzing live Delta Exchange option chain...
+          Analyzing live option chain...
         </p>
         <div style="margin-top:14px; padding-top:12px; border-top:1px solid #1e293b; display:flex; gap:20px; font-size:12px; color:#94a3b8; flex-wrap:wrap;">
           <span>Regime: <strong id="algoRegimeText" style="color:#f8fafc;">--</strong></span>
@@ -3046,7 +3046,7 @@ async function fetchStatus() {
   if (s.underlying) {
     currentUnderlying = s.underlying.toUpperCase();
   }
-  document.getElementById("title").textContent = `${s.underlying} Options Chain — Delta Exchange`;
+  document.getElementById("title").textContent = `${s.underlying} Options Chain`;
   const err = s.last_error ? ` | error: ${s.last_error}` : "";
   document.getElementById("status").textContent =
     `Last fetched: ${s.last_fetched || "-"} | refresh every ${s.poll_seconds}s | ${s.expiry_count} expiries${err}`;
