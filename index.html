@@ -135,6 +135,28 @@
 <div id="tableWrap"></div>
 
 <script>
+// =========================================================
+// GLOBAL SAFEGUARDS & SIGNALS ENGINE BRIDGE
+// =========================================================
+window.renderAiSignals = function(chainData) {
+  try {
+    const signalsView = document.getElementById("aiSignalsView");
+    if (signalsView && signalsView.style.display !== "none") {
+      if (typeof fetchQuantSignal === "function") {
+        fetchQuantSignal();
+      }
+    }
+  } catch (err) {
+    console.warn("renderAiSignals non-fatal error:", err);
+  }
+};
+
+function renderAiSignals(chainData) {
+  if (typeof window.renderAiSignals === "function") {
+    window.renderAiSignals(chainData);
+  }
+}
+
 const BUILDUP_CLASS = {
   "Long Buildup": "green",
   "Short Covering": "green",
@@ -187,6 +209,9 @@ async function fetchChain() {
     currentExpiry = expiries[0];
   }
   renderTable(currentExpiry);
+  if (typeof window.renderAiSignals === "function") {
+    window.renderAiSignals(chainCache[currentExpiry]);
+  }
 }
 
 function renderTabs(expiries) {
@@ -196,7 +221,14 @@ function renderTabs(expiries) {
     const el = document.createElement("div");
     el.className = "tab" + (exp === currentExpiry ? " active" : "");
     el.textContent = exp;
-    el.onclick = () => { currentExpiry = exp; renderTabs(expiries); renderTable(exp); };
+    el.onclick = () => {
+      currentExpiry = exp;
+      renderTabs(expiries);
+      renderTable(exp);
+      if (typeof window.renderAiSignals === "function") {
+        window.renderAiSignals(chainCache[exp]);
+      }
+    };
     wrap.appendChild(el);
   });
 }

@@ -3,11 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Delta Options Chain — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/static/lightweight-charts.standalone.production.js"></script>
+<script>
+  if (typeof LightweightCharts === 'undefined') {
+    document.write('<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"><\/script>');
+  }
+</script>
 <style>
   :root {
     --bg-main: #090514;
@@ -173,6 +181,12 @@
     border-bottom: 2px solid var(--binance-yellow);
   }
 
+  #superChartsTab.active {
+    color: #c084fc !important;
+    border-bottom: 2px solid #a855f7 !important;
+    text-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+  }
+
   .nav-link.has-dropdown::after {
     content: "";
     border: solid var(--text-muted);
@@ -221,6 +235,1019 @@
   .dropdown-item:hover {
     background-color: var(--bg-main);
     color: var(--text-primary);
+  }
+
+  /* ========================================================= */
+  /* SUPER CHARTS INSTITUTIONAL VIEW STYLES                    */
+  /* ========================================================= */
+  .sc-asset-btn {
+    background: #141126;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    color: #94a3b8;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .sc-asset-btn:hover {
+    color: #fff;
+    border-color: rgba(168, 85, 247, 0.5);
+    background: #1b1633;
+  }
+  .sc-asset-btn.active {
+    background: rgba(168, 85, 247, 0.2);
+    color: #e9d5ff;
+    border-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.35);
+  }
+
+  .sc-tf-btn {
+    background: #141126;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    color: #94a3b8;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .sc-tf-btn:hover {
+    color: #fff;
+    background: #1e183a;
+  }
+  .sc-tf-btn.active {
+    background: rgba(168, 85, 247, 0.25);
+    color: #c084fc;
+    border-color: #a855f7;
+    box-shadow: 0 0 6px rgba(168, 85, 247, 0.3);
+  }
+
+  .sc-tool-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #64748b;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .sc-tool-btn:hover {
+    color: #c084fc;
+    background: rgba(139, 92, 246, 0.15);
+  }
+  .sc-tool-btn.active {
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+  }
+
+  /* Quant Options Signals Dashboard */
+  .quant-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin-top: 10px;
+    color: var(--text-primary);
+  }
+
+  /* Control bar: expiry select, timer, refresh */
+  .quant-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .quant-control-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .quant-expiry-select {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .quant-expiry-select:focus {
+    border-color: var(--binance-yellow);
+  }
+
+  .quant-control-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .quant-timer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .quant-refresh-btn {
+    background: rgba(240, 185, 11, 0.15);
+    border: 1px solid rgba(240, 185, 11, 0.4);
+    color: var(--binance-yellow);
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .quant-refresh-btn:hover {
+    background: rgba(240, 185, 11, 0.25);
+    border-color: var(--binance-yellow);
+    box-shadow: 0 0 12px rgba(240, 185, 11, 0.3);
+  }
+
+  .quant-refresh-btn.spinning svg {
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Top Signal Banner Card */
+  .quant-hero-card {
+    background: linear-gradient(135deg, rgba(22, 16, 40, 0.9) 0%, rgba(13, 9, 26, 0.95) 100%);
+    border: 1px solid rgba(189, 92, 255, 0.3);
+    border-radius: 12px;
+    padding: 22px 26px;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 900px) {
+    .quant-hero-card {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .quant-gauge-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .gauge-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .gauge-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .gauge-score-display {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 4px 0;
+  }
+
+  .gauge-score-num {
+    font-size: 42px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+    line-height: 1;
+  }
+
+  .signal-badge-pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .signal-pill-strong-buy {
+    background: rgba(0, 255, 157, 0.2);
+    color: #00ff9d;
+    border: 1px solid #00ff9d;
+    box-shadow: 0 0 14px rgba(0, 255, 157, 0.3);
+  }
+
+  .signal-pill-buy {
+    background: rgba(14, 203, 129, 0.18);
+    color: #0ecb81;
+    border: 1px solid #0ecb81;
+  }
+
+  .signal-pill-neutral {
+    background: rgba(240, 185, 11, 0.18);
+    color: var(--binance-yellow);
+    border: 1px solid var(--binance-yellow);
+  }
+
+  .signal-pill-sell {
+    background: rgba(246, 70, 93, 0.18);
+    color: #f6465d;
+    border: 1px solid #f6465d;
+  }
+
+  .signal-pill-strong-sell {
+    background: rgba(220, 38, 38, 0.25);
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    box-shadow: 0 0 14px rgba(220, 38, 38, 0.35);
+  }
+
+  /* Horizontal Gauge Track */
+  .gauge-track-container {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .gauge-spectrum-bar {
+    width: 100%;
+    height: 14px;
+    border-radius: 7px;
+    background: linear-gradient(to right, 
+      #dc2626 0%, 
+      #f6465d 25%, 
+      #f0b90b 45%, 
+      #f0b90b 55%, 
+      #0ecb81 75%, 
+      #00ff9d 100%
+    );
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+  }
+
+  .gauge-needle {
+    position: absolute;
+    top: -5px;
+    width: 6px;
+    height: 24px;
+    background: #fff;
+    border: 2px solid #000;
+    border-radius: 3px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  .quant-strategy-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .strategy-box {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 4px solid var(--binance-yellow);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+
+  .strategy-box-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .strategy-box-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.45;
+  }
+
+  .regime-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .regime-badge {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .regime-pos-gamma {
+    background: rgba(0, 192, 239, 0.15);
+    color: #00c0ef;
+    border: 1px solid rgba(0, 192, 239, 0.35);
+  }
+
+  .regime-neg-gamma {
+    background: rgba(255, 94, 0, 0.15);
+    color: #ff5e00;
+    border: 1px solid rgba(255, 94, 0, 0.35);
+  }
+
+  .engine-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(14, 203, 129, 0.12);
+    border: 1px solid rgba(14, 203, 129, 0.3);
+    color: #0ecb81;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 16px;
+  }
+
+  .pulsing-dot {
+    width: 7px;
+    height: 7px;
+    background: #0ecb81;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #0ecb81;
+    animation: pulseGlow 1.6s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 203, 129, 0.7); }
+    70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(14, 203, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(14, 203, 129, 0); }
+  }
+
+  /* Two Column Grid: Levels & Components */
+  .quant-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 900px) {
+    .quant-two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .quant-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .quant-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+  }
+
+  .quant-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Levels Grid */
+  .levels-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .level-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .level-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .level-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .level-diff {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Price Channel Graphic */
+  .price-channel-wrap {
+    margin-top: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .channel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .channel-bar-track {
+    position: relative;
+    height: 12px;
+    background: linear-gradient(to right, rgba(246, 70, 93, 0.35), rgba(14, 203, 129, 0.35));
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .channel-spot-marker {
+    position: absolute;
+    top: -6px;
+    width: 6px;
+    height: 24px;
+    background: var(--binance-yellow);
+    border-radius: 3px;
+    box-shadow: 0 0 10px var(--binance-yellow);
+    transform: translateX(-50%);
+    transition: left 0.4s ease;
+  }
+
+  .channel-labels-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  /* Component Factor Rows */
+  .factor-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .factor-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .factor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .factor-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .factor-score-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: monospace;
+  }
+
+  /* Two-way bidirectional progress bar (-100 to +100) */
+  .bidirectional-bar-wrap {
+    position: relative;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bidirectional-center-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.35);
+    z-index: 2;
+  }
+
+  .bidirectional-fill-pos {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    background: #0ecb81;
+    border-radius: 0 4px 4px 0;
+    transition: width 0.4s ease;
+  }
+
+  .bidirectional-fill-neg {
+    position: absolute;
+    right: 50%;
+    top: 0;
+    height: 100%;
+    background: #f6465d;
+    border-radius: 4px 0 0 4px;
+    transition: width 0.4s ease;
+  }
+
+  .factor-sub-note {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Chart Card */
+  .chart-card-container {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chart-toggle-group {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-main);
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+  }
+
+  .chart-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chart-toggle-btn.active {
+    background: var(--bg-panel);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .chart-canvas-wrap {
+    width: 100%;
+    height: 380px;
+    position: relative;
+  }
+
+  .chart-legend-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+
+
+  /* ========================================================= */
+  /* GAMMA EXPOSURE MAP & IMPLIED DAILY RANGE PREDICTOR STYLES */
+  /* ========================================================= */
+  .gamma-map-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .gmap-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .gmap-badges-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .gmap-badge-neon {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .gmap-regime-pos {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+  }
+
+  .gmap-regime-neg {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+  }
+
+  .gmap-net-gex-badge {
+    background: rgba(0, 192, 239, 0.12);
+    color: #00c0ef;
+    border: 1px solid rgba(0, 192, 239, 0.35);
+    font-family: monospace;
+    font-size: 12px;
+  }
+
+  /* Stage Container */
+  .gamma-map-stage {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    background: radial-gradient(circle at 50% 50%, rgba(32, 16, 64, 0.45) 0%, rgba(8, 4, 21, 0.98) 75%), #080415;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 80px rgba(168, 85, 247, 0.05);
+  }
+
+  /* Left Price Ladder */
+  .gmap-ladder-col {
+    position: absolute;
+    left: 20px;
+    top: 24px;
+    bottom: 24px;
+    width: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .gmap-ladder-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #9d94be;
+    background: rgba(19, 15, 38, 0.75);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border-left: 2px solid #6d5b99;
+    backdrop-filter: blur(4px);
+    transition: color 0.3s;
+  }
+
+  /* Stage Grid Guide Lines */
+  .gmap-grid-line {
+    position: absolute;
+    left: 140px;
+    right: 20px;
+    height: 1px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* SVG Elastic Rope Layer */
+  .gamma-rope-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Cards on Stage */
+  .gmap-wall-card {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    border-radius: 10px;
+    padding: 13px 20px;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(8px);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .gmap-wall-top {
+    top: 24px;
+    background: rgba(26, 12, 48, 0.94);
+    border: 2px solid #a855f7;
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.15);
+  }
+
+  .gmap-wall-bottom {
+    bottom: 24px;
+    background: rgba(43, 27, 8, 0.94);
+    border: 2px solid #f59e0b;
+    box-shadow: 0 0 24px rgba(245, 158, 11, 0.4), inset 0 0 15px rgba(245, 158, 11, 0.15);
+  }
+
+  /* Spot Center Box */
+  .gmap-spot-card {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 410px;
+    background: rgba(6, 32, 22, 0.96);
+    border: 2.5px solid #10b981;
+    border-radius: 12px;
+    padding: 14px 22px;
+    z-index: 30;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.55), inset 0 0 20px rgba(16, 185, 129, 0.2);
+    backdrop-filter: blur(10px);
+    will-change: top, transform;
+  }
+
+  /* Little Anchor Nodes on Card Edges */
+  .gmap-anchor-node {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #00ffcc;
+    box-shadow: 0 0 10px #00ffcc, 0 0 20px #10b981;
+    border: 2px solid #fff;
+    z-index: 35;
+  }
+  .gmap-anchor-left { left: -5px; }
+  .gmap-anchor-right { right: -5px; }
+
+  .gmap-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .gmap-card-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .gmap-card-price {
+    font-size: 20px;
+    font-weight: 800;
+    font-family: monospace;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .gmap-card-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .gmap-badge-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .gmap-badge-purple {
+    background: rgba(168, 85, 247, 0.25);
+    color: #e9d5ff;
+    border: 1px solid #a855f7;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+  }
+
+  .gmap-badge-amber {
+    background: rgba(245, 158, 11, 0.25);
+    color: #fde68a;
+    border: 1px solid #f59e0b;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  }
+
+  .gmap-badge-emerald {
+    background: rgba(16, 185, 129, 0.25);
+    color: #a7f3d0;
+    border: 1px solid #10b981;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
+  }
+
+  /* Daily Range Predictor Footer */
+  .daily-range-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .daily-range-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .daily-range-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .dr-stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dr-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .dr-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    font-family: monospace;
+  }
+
+  /* Move Probabilities Grid */
+  .prob-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .prob-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .prob-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .prob-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prob-card-target {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .prob-card-val {
+    font-size: 14px;
+    font-weight: 800;
+    font-family: monospace;
+  }
+
+  .prob-bar-track {
+    height: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .prob-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .prob-card-sub {
+    font-size: 10px;
+    color: var(--text-muted);
   }
 
   .nav-right {
@@ -777,49 +1804,19 @@
 
       <ul class="nav-menu">
         <li class="nav-item">
-          <a class="nav-link has-dropdown" onclick="showOptionsChain()">Futures</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" onclick="showOptionsChain()">COIN-M Futures</a></li>
-            <li><a class="dropdown-item" href="#" onclick="showOptionsChain()">USDT-M Futures</a></li>
-          </ul>
+          <a class="nav-link active" id="optionsTab" onclick="showOptionsChain()">Options</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link has-dropdown" onclick="showOptionsChain()">Options</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" onclick="showOptionsChain()">BTC Options</a></li>
-            <li><a class="dropdown-item" href="#" onclick="showOptionsChain()">ETH Options</a></li>
-          </ul>
+          <a class="nav-link" id="superChartsTab" href="https://www.tradingview.com/chart/CdX1vW1h/" target="_blank" rel="noopener noreferrer" onclick="showSuperCharts(event)">Super Charts ↗</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link has-dropdown">Trading Bots</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Grid Bots</a></li>
-            <li><a class="dropdown-item" href="#">DCA Bots</a></li>
-          </ul>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="#">Copy Trading</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Smart Money</a></li>
-        <li class="nav-item"><a class="nav-link" id="superChartsTab" onclick="showSuperCharts()">Super Charts</a></li>
-        <li class="nav-item">
-          <a class="nav-link has-dropdown">Campaigns</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Trading Competition</a></li>
-            <li><a class="dropdown-item" href="#">Referral Program</a></li>
-          </ul>
+          <a class="nav-link" id="aiSignalsTab" href="/options-signals" onclick="showAiSignals(event)">AI Signals ⚡</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link has-dropdown">Data</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Historical Volatility</a></li>
-            <li><a class="dropdown-item" href="#">Options Markets Insights</a></li>
-          </ul>
+          <a class="nav-link" id="algoLevelsTab" href="/algo-levels" onclick="showAlgoLevels(event)">Algo Levels 🎯</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link has-dropdown">More</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Guides & Tutorials</a></li>
-            <li><a class="dropdown-item" href="#">API Documentation</a></li>
-          </ul>
+          <a class="nav-link" id="gammaMapTab" href="/gamma-map" onclick="showGammaMap(event)">Gamma Map</a>
         </li>
       </ul>
     </div>
@@ -836,26 +1833,26 @@
 
 <!-- Live Ticker Bar -->
 <div class="ticker-bar" id="tickerBar">
-  <div class="ticker-item" id="ticker-BTC">
+  <div class="ticker-item" id="ticker-BTC" style="cursor: pointer;" onclick="switchSuperChartsAsset('BTCUSDT')">
     <span class="coin-badge btc-badge">₿</span>
     <span class="ticker-name">BTCUSDT</span>
     <span class="ticker-price">--</span>
     <span class="ticker-change">--</span>
-    <span class="ticker-bvol">BVOL: 44.11</span>
+    <span class="ticker-bvol">BVOL: 44.10</span>
   </div>
-  <div class="ticker-item" id="ticker-ETH">
+  <div class="ticker-item" id="ticker-ETH" style="cursor: pointer;" onclick="switchSuperChartsAsset('ETHUSDT')">
     <span class="coin-badge eth-badge">Ξ</span>
     <span class="ticker-name">ETHUSDT</span>
     <span class="ticker-price">--</span>
     <span class="ticker-change">--</span>
   </div>
-  <div class="ticker-item" id="ticker-BNB">
+  <div class="ticker-item" id="ticker-BNB" style="cursor: pointer;" onclick="switchSuperChartsAsset('BNBUSDT')">
     <span class="coin-badge bnb-badge">🔶</span>
     <span class="ticker-name">BNBUSDT</span>
     <span class="ticker-price">--</span>
     <span class="ticker-change">--</span>
   </div>
-  <div class="ticker-item" id="ticker-SOL">
+  <div class="ticker-item" id="ticker-SOL" style="cursor: pointer;" onclick="switchSuperChartsAsset('SOLUSDT')">
     <span class="coin-badge sol-badge">S</span>
     <span class="ticker-name">SOLUSDT</span>
     <span class="ticker-price">--</span>
@@ -877,32 +1874,1046 @@
 
 <!-- Main Section -->
 <main>
-  <div class="dashboard-header">
-    <div class="dashboard-title-area">
-      <h1 id="title">Options Chain</h1>
-      <div class="status-bar">
-        <span class="status-dot"></span>
-        <span id="status">connecting...</span>
+  <!-- Options Chain View Container -->
+  <div id="optionsView">
+    <div class="dashboard-header">
+      <div class="dashboard-title-area">
+        <h1 id="title">Options Chain</h1>
+        <div class="status-bar">
+          <span class="status-dot"></span>
+          <span id="status">connecting...</span>
+        </div>
       </div>
+    </div>
+
+    <div class="metrics" id="metrics"></div>
+
+    <div class="tabs-container">
+      <div class="tabs-label">Expiry Date</div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+
+    <div class="table-container" id="tableWrap"></div>
+  </div>
+
+  <!-- Super Charts Institutional Terminal Container -->
+  <div id="superChartsView" class="supercharts-terminal-container" style="display: none; height: calc(100vh - 120px); min-height: 720px; width: 100%; margin-top: 8px; flex-direction: column; background: #0b0914; border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 10px; overflow: hidden; font-family: 'Inter', sans-serif;">
+    
+    <!-- CHART TOP TOOLBAR -->
+    <div class="sc-top-toolbar" style="height: 42px; border-bottom: 1px solid rgba(139, 92, 246, 0.25); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #94a3b8; background: #100d1e; flex-shrink: 0; user-select: none;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <!-- Asset Selector -->
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button id="sc-btn-BTC" class="sc-asset-btn active" onclick="switchSuperChartsAsset('BTCUSDT')">
+            <span style="display:inline-flex; width:16px; height:16px; border-radius:50%; background:#f59e0b; color:#000; font-size:10px; font-weight:700; align-items:center; justify-content:center;">₿</span>
+            BTCUSDT
+          </button>
+          <button id="sc-btn-ETH" class="sc-asset-btn" onclick="switchSuperChartsAsset('ETHUSDT')">
+            <span style="display:inline-flex; width:16px; height:16px; border-radius:50%; background:#3b82f6; color:#fff; font-size:10px; font-weight:700; align-items:center; justify-content:center;">Ξ</span>
+            ETHUSDT
+          </button>
+          <button id="sc-btn-BNB" class="sc-asset-btn" onclick="switchSuperChartsAsset('BNBUSDT')">
+            <span style="display:inline-flex; width:16px; height:16px; border-radius:50%; background:#eab308; color:#000; font-size:10px; font-weight:700; align-items:center; justify-content:center;">B</span>
+            BNBUSDT
+          </button>
+          <button id="sc-btn-SOL" class="sc-asset-btn" onclick="switchSuperChartsAsset('SOLUSDT')">
+            <span style="display:inline-flex; width:16px; height:16px; border-radius:50%; background:#2dd4bf; color:#000; font-size:10px; font-weight:700; align-items:center; justify-content:center;">S</span>
+            SOLUSDT
+          </button>
+        </div>
+
+        <span style="color: #332d4b;">|</span>
+
+        <!-- Timeframe Pills -->
+        <div class="sc-tf-group" style="display: flex; gap: 4px;">
+          <button class="sc-tf-btn" data-tf="5m" onclick="switchSuperChartsTf('5m')">5m</button>
+          <button class="sc-tf-btn active" data-tf="15m" onclick="switchSuperChartsTf('15m')">15m</button>
+          <button class="sc-tf-btn" data-tf="1h" onclick="switchSuperChartsTf('1h')">1h</button>
+          <button class="sc-tf-btn" data-tf="4h" onclick="switchSuperChartsTf('4h')">4h</button>
+          <button class="sc-tf-btn" data-tf="1D" onclick="switchSuperChartsTf('1D')">1D</button>
+        </div>
+
+        <span style="color: #332d4b;">|</span>
+
+        <!-- Checkbox Toggles -->
+        <div style="display: flex; align-items: center; gap: 14px; font-size: 11px;">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #cbd5e1;">
+            <input type="checkbox" id="chk-heatmap" checked style="accent-color: #f59e0b; cursor: pointer;">
+            <span>Liquidity Heatmap</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #67e8f9;">
+            <input type="checkbox" id="chk-cone" checked style="accent-color: #22d3ee; cursor: pointer;">
+            <span>AI Volatility Cone</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #f472b6;">
+            <input type="checkbox" id="chk-gex" checked style="accent-color: #ec4899; cursor: pointer;">
+            <span>GEX Walls</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #a78bfa;">
+            <input type="checkbox" id="chk-signals" checked style="accent-color: #a855f7; cursor: pointer;">
+            <span>AI Signals</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Live OHLC Readout & Engine Badge -->
+      <div style="display: flex; align-items: center; gap: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px;">
+        <div id="sc-ohlc-display" style="color: #10b981;">
+          ● O <span id="sc-o">82,120.48</span> H <span id="sc-h">82,380.00</span> L <span id="sc-l">81,950.00</span> C <span id="sc-c">82,100.00</span> <span id="sc-chg">+0.59%</span>
+        </div>
+        <span style="padding: 2px 8px; border-radius: 4px; background: rgba(88, 28, 135, 0.4); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; font-size: 10px; font-weight: 600;">
+          TV ENGINE + AI OVERLAY
+        </span>
+      </div>
+    </div>
+
+    <!-- MAIN WORKSPACE -->
+    <div style="flex: 1; display: flex; overflow: hidden; padding: 6px; gap: 6px; min-height: 0;">
+      
+      <!-- Left Drawing Toolbar -->
+      <div class="sc-left-toolbar" style="width: 38px; border-right: 1px solid rgba(139, 92, 246, 0.2); background: #0d0a18; border-radius: 8px 0 0 8px; display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 14px; color: #64748b; flex-shrink: 0; z-index: 20;">
+        <button class="sc-tool-btn active" title="Crosshair" onclick="setDrawingTool('crosshair', this)">✢</button>
+        <button class="sc-tool-btn" title="Trend Line" onclick="setDrawingTool('trendline', this)">╱</button>
+        <button class="sc-tool-btn" title="GEX Fib Levels" onclick="setDrawingTool('fib', this)">☰</button>
+        <button class="sc-tool-btn" title="AI Wave Analysis" onclick="setDrawingTool('wave', this)">∿</button>
+        <button class="sc-tool-btn" title="Text Annotation" onclick="setDrawingTool('text', this)">T</button>
+        <button class="sc-tool-btn" title="Magnet Mode" onclick="setDrawingTool('magnet', this)">⌖</button>
+        <button class="sc-tool-btn" title="Toggle Overlays" onclick="toggleAllOverlays(this)">👁</button>
+      </div>
+
+      <!-- Center Area: Top 74% TradingView + Bottom 26% AI Confluence Oscillator -->
+      <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #0d0a18; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.2); min-height: 0;">
+        
+        <!-- TOP 74%: TRADINGVIEW CONTAINER + SYNCHRONIZED OVERLAY CANVAS -->
+        <div id="tv-wrapper" style="position: relative; width: 100%; height: 74%; overflow: hidden;">
+          <div id="tv-chart" style="width: 100%; height: 100%;"></div>
+          <canvas id="ai-overlay-canvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 10; width: 100%; height: 100%;"></canvas>
+        </div>
+
+        <!-- BOTTOM 26%: AI CONFLUENCE SCORE & VOLATILITY SPREAD OSCILLATOR -->
+        <div id="subpanel-wrapper" style="position: relative; width: 100%; height: 26%; border-top: 1px solid rgba(139, 92, 246, 0.25); background: #0b0914; overflow: hidden;">
+          <canvas id="subpanel-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDEBAR: AI MARKET INSIGHTS -->
+      <aside class="sc-insights-sidebar" style="width: 264px; background: rgba(18, 15, 33, 0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <!-- Header -->
+          <div style="border-bottom: 1px solid rgba(139, 92, 246, 0.25); padding-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+            <h2 style="font-size: 11px; font-weight: 800; letter-spacing: 1.2px; color: #e2e8f0; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <span>🤖</span> AI Market Insights
+            </h2>
+            <span class="pulsing-dot" style="background: #10b981; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+          </div>
+
+          <!-- Dynamic AI Natural Language Box -->
+          <div style="font-size: 12px; line-height: 1.5; color: #cbd5e1; background: rgba(22, 18, 41, 0.95); padding: 12px; border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.2);">
+            <p id="sc-insight-text" style="margin: 0;">
+              BTC consolidates below <strong style="color: #fb7185; font-family: 'JetBrains Mono', monospace;">$83,000 Call Wall</strong>. High dealer gamma suggests pin risk.
+            </p>
+            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(139, 92, 246, 0.25); font-size: 11px; color: #94a3b8;">
+              Expected 24h range:<br>
+              <strong id="sc-expected-range" style="color: #67e8f9; font-size: 13px; font-family: 'JetBrains Mono', monospace;">$81,200 - $82,800</strong>
+            </div>
+          </div>
+
+          <!-- AI Sentiment Gauges -->
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">
+              AI Sentiment Gauges
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <!-- Gauge 1: Order Flow -->
+              <div style="background: #141126; padding: 10px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2); display: flex; flex-direction: column; align-items: center;">
+                <svg viewBox="0 0 100 55" style="width: 78px;">
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#2d264c" stroke-width="8" stroke-linecap="round"/>
+                  <path id="sc-gauge1-arc" d="M 10 50 A 40 40 0 0 1 78 22" fill="none" stroke="url(#sc-grad1)" stroke-width="8" stroke-linecap="round"/>
+                  <line id="sc-gauge1-needle" x1="50" y1="50" x2="72" y2="25" stroke="#4ade80" stroke-width="2.5"/>
+                  <circle cx="50" cy="50" r="3" fill="#fff"/>
+                  <defs>
+                    <linearGradient id="sc-grad1">
+                      <stop offset="0%" stop-color="#f43f5e"/>
+                      <stop offset="50%" stop-color="#eab308"/>
+                      <stop offset="100%" stop-color="#22c55e"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <span style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600;">Order Flow</span>
+                <span id="sc-gauge1-val" style="font-size: 11px; color: #4ade80; font-weight: 800; font-family: monospace;">72% Bull</span>
+              </div>
+
+              <!-- Gauge 2: Call Skew -->
+              <div style="background: #141126; padding: 10px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2); display: flex; flex-direction: column; align-items: center;">
+                <svg viewBox="0 0 100 55" style="width: 78px;">
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#2d264c" stroke-width="8" stroke-linecap="round"/>
+                  <path id="sc-gauge2-arc" d="M 10 50 A 40 40 0 0 1 70 18" fill="none" stroke="url(#sc-grad1)" stroke-width="8" stroke-linecap="round"/>
+                  <line id="sc-gauge2-needle" x1="50" y1="50" x2="66" y2="22" stroke="#4ade80" stroke-width="2.5"/>
+                  <circle cx="50" cy="50" r="3" fill="#fff"/>
+                </svg>
+                <span style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600;">Call Skew</span>
+                <span id="sc-gauge2-val" style="font-size: 11px; color: #38bdf8; font-weight: 800; font-family: monospace;">64% Call</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bullish Momentum Indicator -->
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">
+              Momentum Regime
+            </div>
+            <div style="background: #141126; padding: 12px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2); display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: flex-end; gap: 4px; height: 24px;">
+                <span style="width: 5px; height: 6px; border-radius: 2px; background: #10b981;"></span>
+                <span style="width: 5px; height: 10px; border-radius: 2px; background: #10b981;"></span>
+                <span style="width: 5px; height: 14px; border-radius: 2px; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                <span style="width: 5px; height: 18px; border-radius: 2px; background: #34d399;"></span>
+                <span style="width: 5px; height: 24px; border-radius: 2px; background: #4ade80; box-shadow: 0 0 8px #4ade80;"></span>
+              </div>
+              <span id="sc-momentum-badge" style="padding: 4px 10px; border-radius: 999px; background: rgba(5, 46, 22, 0.8); border: 1px solid rgba(74, 222, 128, 0.4); color: #4ade80; font-size: 11px; font-weight: 700;">
+                Bullish
+              </span>
+            </div>
+          </div>
+
+          <!-- Live GEX Summary Metrics -->
+          <div style="background: #141126; padding: 12px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.2);">
+            <div style="font-size: 11px; font-weight: 700; color: #c084fc; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px;">
+              Structural GEX Metrics
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; font-family: 'JetBrains Mono', monospace;">
+              <div>
+                <span style="color: #64748b; font-size: 10px; display: block;">Net GEX</span>
+                <strong id="sc-metric-netgex" style="color: #34d399;">+$142M</strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 10px; display: block;">Gamma Flip</span>
+                <strong id="sc-metric-gammaflip" style="color: #d946ef;">$82,000</strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 10px; display: block;">Max Pain</span>
+                <strong id="sc-metric-maxpain" style="color: #38bdf8;">$82,000</strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 10px; display: block;">Expected Move</span>
+                <strong id="sc-metric-expmove" style="color: #fde047;">$82,100</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Emblem -->
+        <div style="display: flex; justify-content: center; align-items: center; opacity: 0.4; padding-top: 10px;">
+          <svg style="width: 24px; height: 24px; color: #a855f7;" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"/>
+          </svg>
+        </div>
+      </aside>
     </div>
   </div>
 
-  <div class="metrics" id="metrics"></div>
+  <!-- AI Signals Quantitative Dashboard Container -->
+  <div id="aiSignalsView" style="display: none; width: 100%;">
+    <div class="quant-dashboard">
 
-  <div class="tabs-container">
-    <div class="tabs-label">Expiry Date</div>
-    <div class="tabs" id="tabs"></div>
+      <!-- 1. Control & Expiry Bar -->
+      <div class="quant-control-bar">
+        <div class="quant-control-left">
+          <span style="font-weight: 700; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            <span>⚡</span> BTC/USDT Quantitative Engine
+          </span>
+          <span style="color: var(--text-muted); font-size: 13px;">| Expiry:</span>
+          <select id="quantExpirySelect" class="quant-expiry-select" onchange="changeQuantExpiry(this.value)">
+            <option value="">Loading expiries...</option>
+          </select>
+          <div class="engine-live-badge">
+            <span class="pulsing-dot"></span>
+            <span>DELTA STREAMING LIVE</span>
+          </div>
+        </div>
+
+        <div class="quant-control-right">
+          <div class="quant-timer-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Auto-refresh in <span id="quantCountdown" style="color: #fff; font-weight: 700;">30s</span>
+          </div>
+          <button class="quant-refresh-btn" id="quantRefreshBtn" onclick="fetchQuantSignal(true)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh Signal
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Top Signal Banner & Gauge -->
+      <div class="quant-hero-card">
+        <!-- Left: Gauge & Score -->
+        <div class="quant-gauge-col">
+          <div class="gauge-top-row">
+            <span class="gauge-title">Composite Quantitative Score</span>
+            <span id="quantSpotDisplay" style="font-size: 13px; font-weight: 700; color: var(--binance-yellow);">Spot: $--</span>
+          </div>
+
+          <div class="gauge-score-display">
+            <span class="gauge-score-num" id="quantScoreNum">--</span>
+            <span class="signal-badge-pill signal-pill-neutral" id="quantPrimarySignal">ANALYZING</span>
+          </div>
+
+          <!-- Horizontal Gauge Track (-100 to +100) -->
+          <div class="gauge-track-container">
+            <div class="gauge-spectrum-bar">
+              <div class="gauge-needle" id="quantGaugeNeedle" style="left: 50%;"></div>
+            </div>
+            <div class="gauge-labels">
+              <span>-100 Strong Sell</span>
+              <span>-55</span>
+              <span>-20 Neutral</span>
+              <span>+20</span>
+              <span>+55</span>
+              <span>+100 Strong Buy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Recommended Strategy & Market Regime -->
+        <div class="quant-strategy-col">
+          <div class="strategy-box">
+            <div class="strategy-box-title">Active Actionable Strategy Recommendation</div>
+            <div class="strategy-box-text" id="quantStrategyText">Loading quantitative strategy recommendation...</div>
+          </div>
+
+          <div class="regime-badge-container">
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Regime:</span>
+            <span class="regime-badge regime-pos-gamma" id="quantRegimeBadge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span id="quantRegimeText">MEAN REVERTING</span>
+            </span>
+            <span style="font-size: 11px; color: var(--text-muted);" id="quantNetGexText">Net GEX: --</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Key Structural Levels & 5-Factor Score Breakdown -->
+      <div class="quant-two-col">
+
+        <!-- Card A: Key Structural Price Levels -->
+        <div class="quant-card">
+          <div class="quant-card-header">
+            <span class="quant-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00c0ef" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+              Key Institutional Price Levels
+            </span>
+            <span style="font-size: 11px; color: var(--text-muted);" id="quantLevelsSub">Calculated from OI &amp; Greeks</span>
+          </div>
+
+          <div class="levels-grid">
+            <div class="level-item" style="border-left: 3px solid #f6465d;">
+              <span class="level-label">Put Wall Support</span>
+              <span class="level-val" id="lvlPutWall">$--</span>
+              <span class="level-diff" id="lvlPutDiff" style="color: #f6465d;">--</span>
+            </div>
+
+            <div class="level-item" style="border-left: 3px solid #0ecb81;">
+              <span class="level-label">Call Wall Resistance</span>
+              <span class="level-val" id="lvlCallWall">$--</span>
+              <span class="level-diff" id="lvlCallDiff" style="color: #0ecb81;">--</span>
+            </div>
+
+            <div class="level-item" style="border-left: 3px solid #bd5cff;">
+              <span class="level-label">Max Pain Magnet</span>
+              <span class="level-val" id="lvlMaxPain">$--</span>
+              <span class="level-diff" id="lvlPainDiff" style="color: #bd5cff;">--</span>
+            </div>
+
+            <div class="level-item" style="border-left: 3px solid #00c0ef;">
+              <span class="level-label">Zero-Gamma Flip</span>
+              <span class="level-val" id="lvlZeroGamma">$--</span>
+              <span class="level-diff" id="lvlZeroDiff" style="color: #00c0ef;">--</span>
+            </div>
+          </div>
+
+          <!-- Interactive Price Channel Visual -->
+          <div class="price-channel-wrap">
+            <div class="channel-title">
+              <span>Put-Call Trading Range Channel</span>
+              <span id="channelSpotStatus" style="color: var(--binance-yellow); font-weight: 700;">Spot in Channel</span>
+            </div>
+            <div class="channel-bar-track">
+              <div class="channel-spot-marker" id="channelSpotMarker" style="left: 50%;"></div>
+            </div>
+            <div class="channel-labels-row">
+              <span style="color: #f6465d;" id="channelPutLabel">Put Wall: $--</span>
+              <span style="color: var(--binance-yellow);" id="channelSpotLabel">Spot: $--</span>
+              <span style="color: #0ecb81;" id="channelCallLabel">Call Wall: $--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card B: 5-Factor Component Score Breakdown -->
+        <div class="quant-card">
+          <div class="quant-card-header">
+            <span class="quant-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bd5cff" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+              5-Factor Component Breakdown
+            </span>
+            <span style="font-size: 11px; color: var(--text-muted);">Weighted Score Model (-100 to +100)</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Factor 1: OI Wall Positioning (25%) -->
+            <div class="factor-row">
+              <div class="factor-header">
+                <span class="factor-name">OI Wall Positioning <span style="font-size: 11px; color: var(--text-muted);">(25%)</span></span>
+                <span class="factor-score-val" id="valWallScore">0.00</span>
+              </div>
+              <div class="bidirectional-bar-wrap">
+                <div class="bidirectional-center-line"></div>
+                <div class="bidirectional-fill-pos" id="barWallPos" style="width: 0%;"></div>
+                <div class="bidirectional-fill-neg" id="barWallNeg" style="width: 0%;"></div>
+              </div>
+              <div class="factor-sub-note" id="subWallNote">Position relative to Put Wall support vs Call Wall resistance</div>
+            </div>
+
+            <!-- Factor 2: Intraday Delta OI Flow (25%) -->
+            <div class="factor-row">
+              <div class="factor-header">
+                <span class="factor-name">Intraday &Delta;OI Flow <span style="font-size: 11px; color: var(--text-muted);">(25%)</span></span>
+                <span class="factor-score-val" id="valFlowScore">0.00</span>
+              </div>
+              <div class="bidirectional-bar-wrap">
+                <div class="bidirectional-center-line"></div>
+                <div class="bidirectional-fill-pos" id="barFlowPos" style="width: 0%;"></div>
+                <div class="bidirectional-fill-neg" id="barFlowNeg" style="width: 0%;"></div>
+              </div>
+              <div class="factor-sub-note" id="subFlowNote">Net ATM Put writing vs Call writing pressure</div>
+            </div>
+
+            <!-- Factor 3: PCR Sentiment (20%) -->
+            <div class="factor-row">
+              <div class="factor-header">
+                <span class="factor-name">PCR Sentiment Dynamics <span style="font-size: 11px; color: var(--text-muted);">(20%)</span></span>
+                <span class="factor-score-val" id="valPcrScore">0.00</span>
+              </div>
+              <div class="bidirectional-bar-wrap">
+                <div class="bidirectional-center-line"></div>
+                <div class="bidirectional-fill-pos" id="barPcrPos" style="width: 0%;"></div>
+                <div class="bidirectional-fill-neg" id="barPcrNeg" style="width: 0%;"></div>
+              </div>
+              <div class="factor-sub-note" id="subPcrNote">Contrarian Put/Call Ratio evaluation</div>
+            </div>
+
+            <!-- Factor 4: 25-Delta IV Skew (15%) -->
+            <div class="factor-row">
+              <div class="factor-header">
+                <span class="factor-name">25-Delta IV Skew <span style="font-size: 11px; color: var(--text-muted);">(15%)</span></span>
+                <span class="factor-score-val" id="valSkewScore">0.00</span>
+              </div>
+              <div class="bidirectional-bar-wrap">
+                <div class="bidirectional-center-line"></div>
+                <div class="bidirectional-fill-pos" id="barSkewPos" style="width: 0%;"></div>
+                <div class="bidirectional-fill-neg" id="barSkewNeg" style="width: 0%;"></div>
+              </div>
+              <div class="factor-sub-note" id="subSkewNote">Put vs Call Implied Volatility risk pricing</div>
+            </div>
+
+            <!-- Factor 5: Max Pain Gravity (15%) -->
+            <div class="factor-row">
+              <div class="factor-header">
+                <span class="factor-name">Max Pain Gravity <span style="font-size: 11px; color: var(--text-muted);">(15%)</span></span>
+                <span class="factor-score-val" id="valPainScore">0.00</span>
+              </div>
+              <div class="bidirectional-bar-wrap">
+                <div class="bidirectional-center-line"></div>
+                <div class="bidirectional-fill-pos" id="barPainPos" style="width: 0%;"></div>
+                <div class="bidirectional-fill-neg" id="barPainNeg" style="width: 0%;"></div>
+              </div>
+              <div class="factor-sub-note" id="subPainNote">Distance-to-expiration gravitational pull to options Max Pain</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Strike-by-Strike Call vs Put OI & GEX Chart -->
+      <div class="chart-card-container">
+        <div class="quant-card-header">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span class="quant-card-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--binance-yellow)" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              Strike Concentration &amp; Exposure Distribution
+            </span>
+            <div class="chart-toggle-group">
+              <button class="chart-toggle-btn active" id="btnChartModeOI" onclick="setQuantChartMode('oi')">Open Interest (Contracts)</button>
+              <button class="chart-toggle-btn" id="btnChartModeGEX" onclick="setQuantChartMode('gex')">Gamma Exposure (GEX)</button>
+            </div>
+          </div>
+          <span style="font-size: 11px; color: var(--text-muted);" id="chartStrikeCount">0 Strikes Analyzed</span>
+        </div>
+
+        <div class="chart-canvas-wrap">
+          <canvas id="quantStrikeCanvas" width="1200" height="380" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div id="chartTooltip" style="position: absolute; display: none; background: rgba(18, 12, 35, 0.95); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; font-size: 11px; pointer-events: none; z-index: 50; box-shadow: 0 4px 14px rgba(0,0,0,0.6);"></div>
+        </div>
+
+        <div class="chart-legend-row">
+          <div class="legend-item">
+            <div class="legend-color-box" style="background: #0ecb81;"></div>
+            <span>Call Open Interest</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color-box" style="background: #f6465d;"></div>
+            <span>Put Open Interest</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color-box" style="background: var(--binance-yellow); border: 1px dashed #fff;"></div>
+            <span>Current BTC Spot</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color-box" style="background: #bd5cff;"></div>
+            <span>Max Pain Magnet</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color-box" style="background: #00c0ef;"></div>
+            <span>Zero-Gamma Flip</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="table-container" id="tableWrap"></div>
+  <!-- Gamma Exposure Map & Implied Daily Range Predictor Container -->
+  <div id="gammaMapView" style="display: none; width: 100%;">
+    <div class="gamma-map-dashboard">
 
-  <!-- Super Charts TradingView Container -->
-  <div id="superChartsView" class="tradingview-widget-container" style="display: none; height: 650px; width: 100%; margin-top: 10px; background-color: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
-    <div id="tradingview_custom_chart" style="height: 100%; width: 100%;"></div>
+      <!-- 1. Control & Expiry Bar -->
+      <div class="gmap-control-bar">
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <span style="font-weight: 700; font-size: 15px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            <span>⚡</span> Gamma Exposure Map & Implied Daily Range
+          </span>
+          <span style="color: var(--text-muted); font-size: 13px;">| Expiry:</span>
+          <select id="gammaMapExpirySelect" class="quant-expiry-select" onchange="changeGammaExpiry(this.value)">
+            <option value="">Loading expiries...</option>
+          </select>
+          <div class="gmap-badges-group">
+            <span class="gmap-badge-neon gmap-regime-neg" id="gmapRegimeBadge">NEGATIVE GAMMA (Volatile)</span>
+            <span class="gmap-badge-neon gmap-net-gex-badge" id="gmapNetGexBadge">Net GEX: -$7.15M</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="quant-timer-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Auto-refresh in <span id="gammaCountdown" style="color: #fff; font-weight: 700;">30s</span>
+          </div>
+          <button class="quant-refresh-btn" id="gammaRefreshBtn" onclick="fetchGammaMapData(true)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh Map
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Interactive Moving Rope / Doori Gamma Exposure Stage -->
+      <div class="gamma-map-stage" id="gammaMapStage">
+        <!-- Left Y-Axis Price Ladder -->
+        <div class="gmap-ladder-col" id="gmapLadder">
+          <div class="gmap-ladder-item">$83,224.0</div>
+          <div class="gmap-ladder-item">$82,736.0</div>
+          <div class="gmap-ladder-item">$82,248.0</div>
+          <div class="gmap-ladder-item">$81,760.0</div>
+          <div class="gmap-ladder-item">$81,272.0</div>
+          <div class="gmap-ladder-item">$80,784.0</div>
+        </div>
+
+        <!-- Horizontal Guide Lines -->
+        <div class="gmap-grid-line" style="top: 24px;"></div>
+        <div class="gmap-grid-line" style="top: 20%;"></div>
+        <div class="gmap-grid-line" style="top: 40%;"></div>
+        <div class="gmap-grid-line" style="top: 60%;"></div>
+        <div class="gmap-grid-line" style="top: 80%;"></div>
+        <div class="gmap-grid-line" style="bottom: 24px;"></div>
+
+        <!-- SVG Rope Layer -->
+        <svg class="gamma-rope-svg" id="gammaRopeSvg">
+          <defs>
+            <filter id="neon-glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur2" />
+              <feMerge>
+                <feMergeNode in="blur2" />
+                <feMergeNode in="blur1" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <linearGradient id="tetherGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8" />
+              <stop offset="50%" stop-color="#10b981" stop-opacity="0.9" />
+              <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.8" />
+            </linearGradient>
+            <linearGradient id="ropeGradLeft" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#00c0ef" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#10b981" stop-opacity="1" />
+            </linearGradient>
+            <linearGradient id="ropeGradRight" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="1" />
+              <stop offset="100%" stop-color="#00c0ef" stop-opacity="0.85" />
+            </linearGradient>
+          </defs>
+
+          <!-- Vertical Tether Connecting Gamma Wall -> Spot -> Put Wall -->
+          <line id="tetherTopLine" x1="50%" y1="75" x2="50%" y2="220" stroke="url(#tetherGrad)" stroke-width="2" stroke-dasharray="6,4" />
+          <line id="tetherBottomLine" x1="50%" y1="300" x2="50%" y2="480" stroke="url(#tetherGrad)" stroke-width="2" stroke-dasharray="6,4" />
+
+          <!-- Zero Gamma Flip Level Reference Line -->
+          <g id="zeroGammaLineGroup">
+            <line id="zeroGammaRefLine" x1="140" y1="360" x2="100%" y2="360" stroke="#00c0ef" stroke-width="1.5" stroke-dasharray="8,5" opacity="0.65" />
+            <text id="zeroGammaText" x="150" y="352" fill="#00c0ef" font-size="11" font-weight="700" font-family="Inter, sans-serif">0-GAMMA FLIP ($77,600)</text>
+          </g>
+
+          <!-- Dynamic Left Elastic Rope -->
+          <path id="leftElasticRopeOuter" d="" fill="none" stroke="url(#ropeGradLeft)" stroke-width="6" opacity="0.7" filter="url(#neon-glow-cyan)" />
+          <path id="leftElasticRopeInner" d="" fill="none" stroke="#fff" stroke-width="2" />
+
+          <!-- Dynamic Right Elastic Rope -->
+          <path id="rightElasticRopeOuter" d="" fill="none" stroke="url(#ropeGradRight)" stroke-width="6" opacity="0.7" filter="url(#neon-glow-cyan)" />
+          <path id="rightElasticRopeInner" d="" fill="none" stroke="#fff" stroke-width="2" />
+        </svg>
+
+        <!-- 1. TOP BOX: GAMMA WALL (CALL RESISTANCE) -->
+        <div class="gmap-wall-card gmap-wall-top" id="cardGammaWall">
+          <div class="gmap-card-info">
+            <div class="gmap-card-label" style="color: #c084fc;">⚡ GAMMA WALL (CALL RESISTANCE)</div>
+            <div class="gmap-card-price" id="gmapGammaWallPrice">$82,400.0</div>
+            <div class="gmap-card-sub">Top Dealer Gamma Ceiling & Resistance Strike</div>
+          </div>
+          <span class="gmap-badge-pill gmap-badge-purple" id="gmapUpsideBadge">+0.32% ▲</span>
+        </div>
+
+        <!-- 2. CENTER BOX: SPOT PRICE (DYNAMICALLY OSCILLATING & ATTACHED TO ROPE) -->
+        <div class="gmap-spot-card" id="cardSpotPrice" style="top: 50%;">
+          <div class="gmap-anchor-node gmap-anchor-left"></div>
+          <div class="gmap-anchor-node gmap-anchor-right"></div>
+          
+          <div class="gmap-card-info">
+            <div class="gmap-card-label" style="color: #34d399; display: flex; align-items: center; gap: 6px;">
+              <span class="pulsing-dot" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+              CURRENT BTC SPOT PRICE
+            </div>
+            <div class="gmap-card-price" id="gmapSpotPrice" style="color: #fff; font-size: 24px;">$82,139.30</div>
+            <div class="gmap-card-sub" id="gmapChannelStatus">67.4% Channel Height (Closer to Gamma Wall)</div>
+          </div>
+
+          <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+            <span class="gmap-badge-pill gmap-badge-emerald" id="gmapSpotStateBadge">ACTIVE SPOT</span>
+            <span style="font-size: 11px; color: #a7f3d0; font-family: monospace;" id="gmapSpotDiffSummary">Support: +$539 | Wall: -$261</span>
+          </div>
+        </div>
+
+        <!-- 3. BOTTOM BOX: PUT WALL (SUPPORT FLOOR) -->
+        <div class="gmap-wall-card gmap-wall-bottom" id="cardPutWall">
+          <div class="gmap-card-info">
+            <div class="gmap-card-label" style="color: #fbbf24;">🛡️ PUT WALL (SUPPORT FLOOR)</div>
+            <div class="gmap-card-price" id="gmapPutWallPrice">$81,600.0</div>
+            <div class="gmap-card-sub">Major Dealer Put OI Support Floor</div>
+          </div>
+          <span class="gmap-badge-pill gmap-badge-amber" id="gmapDownsideBadge">-0.66% ▼</span>
+        </div>
+      </div>
+
+      <!-- 3. Daily Range Predictor Footer -->
+      <div class="daily-range-card">
+        <div class="daily-range-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 15px; font-weight: 700; color: #fff;">📊 Implied Daily Range & Volatility Predictor</span>
+            <span style="font-size: 12px; color: var(--text-muted);">(1-Standard Deviation $\pm 1\sigma$ Expected Move)</span>
+          </div>
+          <div id="drExpectedMoveBadge" class="gmap-badge-pill gmap-badge-emerald" style="font-size: 14px;">
+            Expected 1D Range: ±2.08%
+          </div>
+        </div>
+
+        <!-- Summary Stats Grid -->
+        <div class="daily-range-summary-grid">
+          <div class="dr-stat-box">
+            <span class="dr-stat-label">1-SD Expected Move</span>
+            <span class="dr-stat-value" id="drExpectedMoveVal" style="color: #10b981;">±2.08%</span>
+          </div>
+          <div class="dr-stat-box">
+            <span class="dr-stat-label">Implied 1-SD Range</span>
+            <span class="dr-stat-value" id="drRangeLevels" style="color: #eaecef; font-size: 14px;">$80,428 - $83,851</span>
+          </div>
+          <div class="dr-stat-box">
+            <span class="dr-stat-label">ATM Implied Volatility</span>
+            <span class="dr-stat-value" id="drAtmIvVal" style="color: #bd5cff;">39.81% IV</span>
+          </div>
+          <div class="dr-stat-box">
+            <span class="dr-stat-label">Distance to Gamma Wall</span>
+            <span class="dr-stat-value" id="drUpsideRoom" style="color: #c084fc;">+0.32% ($82,400)</span>
+          </div>
+          <div class="dr-stat-box">
+            <span class="dr-stat-label">Distance to Put Wall</span>
+            <span class="dr-stat-value" id="drDownsideRoom" style="color: #fbbf24;">-0.66% ($81,600)</span>
+          </div>
+        </div>
+
+        <!-- Move Probabilities Grid -->
+        <div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">
+            Probability of BTC Daily Move Exceeding Threshold (2-Tailed Log-Normal Distribution)
+          </div>
+          <div class="prob-cards-grid" id="drProbGrid">
+            <!-- Dynamically populated 1%, 2%, 3%, 5%, 8%, 10% cards -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Algo Levels Dashboard Container -->
+  <div id="algoLevelsView" class="tab-view" style="display:none; padding: 24px; background: #07090e; color: #f8fafc; font-family: 'Inter', monospace; border: 1px solid var(--border-color); border-radius: 12px; margin-top: 10px;">
+    <!-- Expiry & Refresh Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; background: #0f172a; padding: 12px 20px; border-radius: 10px; border: 1px solid #1e293b;">
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span style="font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <span>🎯</span> Option Settlement Expiry:
+        </span>
+        <select id="algoExpirySelect" class="quant-expiry-select" onchange="changeAlgoExpiry(this.value)" style="background: #1e293b; color: #fff; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;">
+          <option value="0">Loading expiries...</option>
+        </select>
+        <span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;">
+          <span class="pulsing-dot" style="background:#10b981;"></span>
+          LIVE 10s STREAMING
+        </span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="algoAutoRefreshBadge" style="font-size: 12px; color: #94a3b8; font-weight: 600;">
+          Auto-refresh in <strong id="algoCountdownText" style="color: #fff;">10s</strong>
+        </span>
+        <button id="algoRefreshBtn" onclick="fetchAlgoSignals(true)" style="background: #1e293b; border: 1px solid #334155; color: #38bdf8; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh Levels
+        </button>
+      </div>
+    </div>
+
+    <!-- Header Row -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #1e293b; padding-bottom:16px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h2 style="margin:0; font-size:22px; font-weight:800; color:#ffffff;">🎯 Institutional Algo Trade Levels (Entry • SL • TG1–TG3)</h2>
+        <p style="margin:4px 0 0; font-size:12px; color:#94a3b8;">Real-time BTCUSDT Execution Levels anchored to Option Chain OI Walls, Net GEX & 1σ Implied Volatility</p>
+      </div>
+      <div style="display:flex; gap:12px; align-items:center;">
+        <span id="algoConfidenceBadge" style="background:rgba(14,165,233,0.15); border:1px solid #0ea5e9; color:#38bdf8; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:700;">
+          Confidence: --%
+        </span>
+        <span id="algoRRRBadge" style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; color:#c084fc; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:700;">
+          R:R --
+        </span>
+      </div>
+    </div>
+
+    <!-- Master Signal Banner -->
+    <div id="algoSignalBanner" style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; border:1px solid #1e293b; border-left:5px solid #10b981; border-radius:12px; padding:18px 24px; margin-bottom:22px; flex-wrap:wrap; gap:16px;">
+      <div>
+        <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.2px;">Active Algorithmic Signal</div>
+        <div id="algoDirectionText" style="font-size:28px; font-weight:900; color:#10b981; margin-top:4px;">LOADING...</div>
+        <div id="algoStrategyTitle" style="font-size:13px; color:#e2e8f0; margin-top:4px; font-weight:600;">Strategy: --</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px; color:#94a3b8; text-transform:uppercase;">Recommended Options Execution</div>
+        <div id="algoOptionLegPill" style="margin-top:6px; background:#1e293b; border:1px solid #334155; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; color:#38bdf8;">
+          --
+        </div>
+      </div>
+    </div>
+
+    <!-- 5-Box Trade Level Ladder: ENTRY | SL | TG1 | TG2 | TG3 -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; margin-bottom:24px;">
+      <!-- ENTRY -->
+      <div style="background:#0b1324; border:1px solid rgba(14,165,233,0.5); border-radius:12px; padding:16px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:#38bdf8; font-weight:700; letter-spacing:1px;">1. ENTRY LEVEL</div>
+          <button onclick="copyLevelPrice('lvlEntry')" title="Copy price" style="background:transparent; border:none; color:#64748b; cursor:pointer; font-size:11px;">📋</button>
+        </div>
+        <div id="lvlEntry" style="font-size:22px; font-weight:800; color:#ffffff; margin:8px 0;">$--</div>
+        <div style="font-size:11px; color:#64748b;">Spot / Trigger Zone</div>
+      </div>
+
+      <!-- STOP LOSS -->
+      <div style="background:#1c0d14; border:1px solid rgba(239,68,68,0.55); border-radius:12px; padding:16px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:#f87171; font-weight:700; letter-spacing:1px;">2. STOP LOSS (SL)</div>
+          <button onclick="copyLevelPrice('lvlSL')" title="Copy price" style="background:transparent; border:none; color:#64748b; cursor:pointer; font-size:11px;">📋</button>
+        </div>
+        <div id="lvlSL" style="font-size:22px; font-weight:800; color:#fca5a5; margin:8px 0;">$--</div>
+        <div id="lvlSLPct" style="font-size:11px; color:#ef4444; font-weight:700;">--% (Wall Invalidation)</div>
+      </div>
+
+      <!-- TARGET 1 -->
+      <div style="background:#0a1c17; border:1px solid rgba(34,197,94,0.45); border-radius:12px; padding:16px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:#4ade80; font-weight:700; letter-spacing:1px;">3. TARGET 1 (TG1)</div>
+          <button onclick="copyLevelPrice('lvlTG1')" title="Copy price" style="background:transparent; border:none; color:#64748b; cursor:pointer; font-size:11px;">📋</button>
+        </div>
+        <div id="lvlTG1" style="font-size:22px; font-weight:800; color:#86efac; margin:8px 0;">$--</div>
+        <div id="lvlTG1Pct" style="font-size:11px; color:#22c55e; font-weight:700;">+--% (0.45σ / Scalp)</div>
+      </div>
+
+      <!-- TARGET 2 -->
+      <div style="background:#08221b; border:1px solid rgba(16,185,129,0.65); border-radius:12px; padding:16px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:#34d399; font-weight:700; letter-spacing:1px;">4. TARGET 2 (TG2)</div>
+          <button onclick="copyLevelPrice('lvlTG2')" title="Copy price" style="background:transparent; border:none; color:#64748b; cursor:pointer; font-size:11px;">📋</button>
+        </div>
+        <div id="lvlTG2" style="font-size:22px; font-weight:800; color:#6ee7b7; margin:8px 0;">$--</div>
+        <div id="lvlTG2Pct" style="font-size:11px; color:#10b981; font-weight:700;">+--% (Primary OI Wall)</div>
+      </div>
+
+      <!-- TARGET 3 -->
+      <div style="background:#19102c; border:1px solid rgba(168,85,247,0.65); border-radius:12px; padding:16px; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11px; color:#c084fc; font-weight:700; letter-spacing:1px;">5. TARGET 3 (TG3)</div>
+          <button onclick="copyLevelPrice('lvlTG3')" title="Copy price" style="background:transparent; border:none; color:#64748b; cursor:pointer; font-size:11px;">📋</button>
+        </div>
+        <div id="lvlTG3" style="font-size:22px; font-weight:800; color:#e9d5ff; margin:8px 0;">$--</div>
+        <div id="lvlTG3Pct" style="font-size:11px; color:#a855f7; font-weight:700;">+--% (Gamma Squeeze)</div>
+      </div>
+    </div>
+
+    <!-- Visual Price Ladder Progress Bar -->
+    <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:18px 24px; margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <span style="font-size:12px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">
+          📈 Trade Execution Continuum & Spot Pin
+        </span>
+        <span id="algoSpotPinText" style="font-size:12px; font-weight:700; color:#38bdf8; font-family:monospace;">
+          Spot: $--
+        </span>
+      </div>
+      <div style="position:relative; height:12px; background:linear-gradient(to right, #ef4444 0%, #38bdf8 30%, #22c55e 60%, #10b981 85%, #a855f7 100%); border-radius:6px;">
+        <div id="algoSpotCursor" style="position:absolute; top:-6px; left:30%; transform:translateX(-50%); width:6px; height:24px; background:#fff; border:2px solid #000; border-radius:3px; box-shadow:0 0 10px #38bdf8; transition:left 0.4s ease;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:11px; font-weight:600; color:#64748b;">
+        <span style="color:#ef4444;">SL Floor</span>
+        <span style="color:#38bdf8;">Entry</span>
+        <span style="color:#22c55e;">TG1 Scalp</span>
+        <span style="color:#10b981;">TG2 Wall</span>
+        <span style="color:#a855f7;">TG3 Squeeze</span>
+      </div>
+    </div>
+
+    <!-- Strategy & Quantitative Basis Panel -->
+    <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:18px;">
+      <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:18px;">
+        <div style="font-size:12px; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
+          🧠 Why & How This Algo Signal Was Generated
+        </div>
+        <p id="algoBasisExplanation" style="font-size:13px; line-height:1.6; color:#cbd5e1; margin:0;">
+          Analyzing live Delta Exchange option chain...
+        </p>
+        <div style="margin-top:14px; padding-top:12px; border-top:1px solid #1e293b; display:flex; gap:20px; font-size:12px; color:#94a3b8; flex-wrap:wrap;">
+          <span>Regime: <strong id="algoRegimeText" style="color:#f8fafc;">--</strong></span>
+          <span>Composite Score: <strong id="algoScoreText" style="color:#f8fafc;">-- / 100</strong></span>
+        </div>
+      </div>
+
+      <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:18px;">
+        <div style="font-size:12px; font-weight:700; color:#c084fc; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">
+          📊 Structural Option Chain Anchors
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+          <div style="color:#94a3b8;">Put Wall Support: <strong id="ancPutWall" style="color:#fbbf24;">$--</strong></div>
+          <div style="color:#94a3b8;">Call Wall Resistance: <strong id="ancCallWall" style="color:#c084fc;">$--</strong></div>
+          <div style="color:#94a3b8;">Zero-Gamma Pivot: <strong id="ancZeroGamma" style="color:#38bdf8;">$--</strong></div>
+          <div style="color:#94a3b8;">Max Pain Magnet: <strong id="ancMaxPain" style="color:#34d399;">$--</strong></div>
+          <div style="color:#94a3b8;">1σ Daily Vol Move: <strong id="ancSigmaUsd" style="color:#f8fafc;">±$--</strong></div>
+          <div style="color:#94a3b8;">PCR / 25D Skew: <strong id="ancPcrSkew" style="color:#f8fafc;">--</strong></div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
 <script>
+// =========================================================
+// GLOBAL SAFEGUARDS & SIGNALS ENGINE BRIDGE
+// =========================================================
+window.renderAiSignals = function(chainData) {
+  try {
+    const signalsView = document.getElementById("aiSignalsView");
+    if (signalsView && signalsView.style.display !== "none") {
+      if (typeof fetchQuantSignal === "function") {
+        fetchQuantSignal();
+      }
+    }
+  } catch (err) {
+    console.warn("renderAiSignals non-fatal error:", err);
+  }
+};
+
+function renderAiSignals(chainData) {
+  if (typeof window.renderAiSignals === "function") {
+    window.renderAiSignals(chainData);
+  }
+}
+
+// =========================================================
+// ALGO TRADE LEVELS ENGINE BRIDGE
+// =========================================================
+let algoSelectedExpiryIndex = 0;
+let algoTimerInterval = null;
+let algoCountdownVal = 10;
+let isAlgoFetching = false;
+
+window.renderAlgoLevels = async function(expiryIndex = 0) {
+  if (isAlgoFetching) return;
+  isAlgoFetching = true;
+  try {
+    const res = await fetch(`/api/v1/algo-signals/live?expiry_index=${expiryIndex}`);
+    if (!res.ok) return;
+    const d = await res.json();
+
+    // Expiry dropdown setup
+    const expSelect = document.getElementById("algoExpirySelect");
+    if (expSelect && d.available_expiries && (expSelect.options.length <= 1 || !expSelect.value)) {
+      expSelect.innerHTML = "";
+      d.available_expiries.forEach((exp, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `${exp}${idx === 0 ? " (Nearest)" : ""}`;
+        if (idx === expiryIndex) opt.selected = true;
+        expSelect.appendChild(opt);
+      });
+      algoSelectedExpiryIndex = expiryIndex;
+    }
+
+    // Direction & Banner Color Coding
+    const dirEl = document.getElementById('algoDirectionText');
+    const banner = document.getElementById('algoSignalBanner');
+    if (dirEl) {
+      dirEl.innerText = d.signal_direction;
+      if (d.signal_direction.includes("LONG") || d.signal_direction.includes("BUY")) {
+        dirEl.style.color = "#10b981";
+        if (banner) banner.style.borderLeftColor = "#10b981";
+      } else if (d.signal_direction.includes("SHORT") || d.signal_direction.includes("SELL")) {
+        dirEl.style.color = "#ef4444";
+        if (banner) banner.style.borderLeftColor = "#ef4444";
+      } else {
+        dirEl.style.color = "#f59e0b";
+        if (banner) banner.style.borderLeftColor = "#f59e0b";
+      }
+    }
+
+    document.getElementById('algoConfidenceBadge').innerText = `Confidence: ${d.confidence_pct}%`;
+    document.getElementById('algoRRRBadge').innerText = `R:R ${d.trade_levels.risk_reward_ratio}`;
+    document.getElementById('algoStrategyTitle').innerText = `Strategy: ${d.strategy_used.name}`;
+    document.getElementById('algoOptionLegPill').innerText = d.strategy_used.recommended_options_trade;
+
+    // Levels
+    const tl = d.trade_levels;
+    document.getElementById('lvlEntry').innerText = `$${Number(tl.entry).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    document.getElementById('lvlSL').innerText = `$${Number(tl.stop_loss).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    document.getElementById('lvlSLPct').innerText = `${tl.sl_pct}% (Invalidation)`;
+    document.getElementById('lvlTG1').innerText = `$${Number(tl.tg1).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    document.getElementById('lvlTG1Pct').innerText = `${tl.tg1_pct > 0 ? '+' : ''}${tl.tg1_pct}% (TG1)`;
+    document.getElementById('lvlTG2').innerText = `$${Number(tl.tg2).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    document.getElementById('lvlTG2Pct').innerText = `${tl.tg2_pct > 0 ? '+' : ''}${tl.tg2_pct}% (TG2)`;
+    document.getElementById('lvlTG3').innerText = `$${Number(tl.tg3).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    document.getElementById('lvlTG3Pct').innerText = `${tl.tg3_pct > 0 ? '+' : ''}${tl.tg3_pct}% (TG3)`;
+
+    // Continuum Position
+    const spotPin = document.getElementById('algoSpotPinText');
+    if (spotPin) spotPin.innerText = `Spot: $${Number(tl.entry).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    const cursor = document.getElementById('algoSpotCursor');
+    if (cursor) {
+      const slVal = tl.stop_loss;
+      const tg3Val = tl.tg3;
+      const entryVal = tl.entry;
+      let pct = 28;
+      const totalSpan = Math.abs(tg3Val - slVal);
+      if (totalSpan > 0) {
+        pct = ((entryVal - Math.min(slVal, tg3Val)) / totalSpan) * 100;
+      }
+      cursor.style.left = `${Math.max(6, Math.min(94, pct))}%`;
+    }
+
+    // Basis & Anchors
+    document.getElementById('algoBasisExplanation').innerText = d.strategy_used.basis_explanation;
+    document.getElementById('algoRegimeText').innerText = d.strategy_used.gamma_regime;
+    document.getElementById('algoScoreText').innerText = `${d.composite_score} / 100`;
+
+    const sa = d.structural_anchors;
+    document.getElementById('ancPutWall').innerText = `$${Number(sa.put_wall_support).toLocaleString()}`;
+    document.getElementById('ancCallWall').innerText = `$${Number(sa.call_wall_resistance).toLocaleString()}`;
+    document.getElementById('ancZeroGamma').innerText = `$${Number(sa.zero_gamma_pivot).toLocaleString()}`;
+    document.getElementById('ancMaxPain').innerText = `$${Number(sa.max_pain_magnet).toLocaleString()}`;
+    document.getElementById('ancSigmaUsd').innerText = `±$${Number(sa.daily_1sigma_usd).toLocaleString()}`;
+    document.getElementById('ancPcrSkew').innerText = `${sa.pcr_oi} / ${sa.skew_25d_pct}%`;
+  } catch (err) {
+    console.warn("Algo levels fetch error:", err);
+  } finally {
+    isAlgoFetching = false;
+  }
+};
+
+function renderAlgoLevels(expiryIndex = 0) {
+  if (typeof window.renderAlgoLevels === "function") {
+    window.renderAlgoLevels(expiryIndex);
+  }
+}
+
+function changeAlgoExpiry(val) {
+  algoSelectedExpiryIndex = parseInt(val, 10) || 0;
+  if (typeof window.renderAlgoLevels === "function") {
+    window.renderAlgoLevels(algoSelectedExpiryIndex);
+  }
+  resetAlgoTimer();
+}
+
+function copyLevelPrice(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const raw = el.innerText.replace('$', '').replace(/,/g, '').trim();
+  navigator.clipboard.writeText(raw).then(() => {
+    const original = el.innerText;
+    el.innerText = "COPIED!";
+    setTimeout(() => { el.innerText = original; }, 1000);
+  });
+}
+
+function fetchAlgoSignals(isManual = false) {
+  const btn = document.getElementById("algoRefreshBtn");
+  if (btn && isManual) {
+    const svg = btn.querySelector("svg");
+    if (svg) svg.style.animation = "spin 1s linear infinite";
+    setTimeout(() => { if (svg) svg.style.animation = "none"; }, 1000);
+  }
+  if (typeof window.renderAlgoLevels === "function") {
+    window.renderAlgoLevels(algoSelectedExpiryIndex);
+  }
+  resetAlgoTimer();
+}
+
+function resetAlgoTimer() {
+  if (algoTimerInterval) clearInterval(algoTimerInterval);
+  algoCountdownVal = 10;
+  const cdText = document.getElementById("algoCountdownText");
+  if (cdText) cdText.innerText = `${algoCountdownVal}s`;
+
+  algoTimerInterval = setInterval(() => {
+    algoCountdownVal--;
+    const cd = document.getElementById("algoCountdownText");
+    if (cd) cd.innerText = `${algoCountdownVal}s`;
+    if (algoCountdownVal <= 0) {
+      algoCountdownVal = 10;
+      if (typeof window.renderAlgoLevels === "function") {
+        window.renderAlgoLevels(algoSelectedExpiryIndex);
+      }
+    }
+  }, 1000);
+}
+
 const BUILDUP_CLASS = {
   "Long Buildup": "green",
   "Short Covering": "green",
@@ -980,6 +2991,11 @@ async function fetchChain() {
     currentExpiry = expiries[0];
   }
   renderTable(currentExpiry);
+  
+  // Safe decoupled call to renderAiSignals
+  if (typeof window.renderAiSignals === "function") {
+    window.renderAiSignals(chainCache[currentExpiry]);
+  }
 }
 
 function renderTabs(expiries) {
@@ -989,7 +3005,15 @@ function renderTabs(expiries) {
     const el = document.createElement("div");
     el.className = "tab" + (exp === currentExpiry ? " active" : "");
     el.textContent = exp;
-    el.onclick = () => { currentExpiry = exp; renderTabs(expiries); renderTable(exp); };
+    el.onclick = () => {
+      currentExpiry = exp;
+      renderTabs(expiries);
+      renderTable(exp);
+      // Safe decoupled call to renderAiSignals
+      if (typeof window.renderAiSignals === "function") {
+        window.renderAiSignals(chainCache[exp]);
+      }
+    };
     wrap.appendChild(el);
   });
 }
@@ -1225,85 +3249,1591 @@ async function updateTickerPrices() {
   }
 }
 
-let tvWidgetInitialized = false;
+// =========================================================================
+// QUANTITATIVE OPTIONS SIGNAL ENGINE CONTROLLER & DASHBOARD
+// =========================================================================
 
-function showSuperCharts() {
-  // Hide background image container
-  document.getElementById("dashboardBg").style.display = "none";
-  document.getElementById("dashboardBg").classList.remove("active-home");
-  
-  // Show data elements
-  document.getElementById("tickerBar").style.display = "flex";
-  document.querySelector("main").style.display = "block";
+let quantSignalData = null;
+let currentQuantExpiry = "";
+let quantChartMode = "oi"; // 'oi' or 'gex'
+let quantCountdownSec = 30;
+let quantTimerInterval = null;
 
-  // Restore header styles
-  const header = document.querySelector("header");
-  header.style.backgroundColor = "var(--bg-panel)";
-  header.style.backdropFilter = "none";
-  header.style.webkitBackdropFilter = "none";
-  header.style.borderBottomColor = "var(--border-color)";
+function setQuantChartMode(mode) {
+  quantChartMode = mode;
+  document.getElementById("btnChartModeOI").classList.toggle("active", mode === "oi");
+  document.getElementById("btnChartModeGEX").classList.toggle("active", mode === "gex");
+  renderQuantChart();
+}
 
-  // Update nav active states
-  document.querySelector(".home-icon").classList.remove("active");
+function changeQuantExpiry(exp) {
+  currentQuantExpiry = exp;
+  fetchQuantSignal(true);
+}
 
-  document.getElementById("metrics").style.display = "none";
-  const tabsContainer = document.getElementById("tabs").parentNode;
-  if (tabsContainer) tabsContainer.style.display = "none";
-  document.getElementById("tableWrap").style.display = "none";
-  
-  const chartView = document.getElementById("superChartsView");
-  chartView.style.display = "block";
-  
-  document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
-  document.getElementById("superChartsTab").classList.add("active");
-  
-  if (!tvWidgetInitialized) {
-    new TradingView.widget({
-      "autosize": true,
-      "symbol": "BINANCE:BTCUSDT",
-      "interval": "D",
-      "timezone": "Etc/UTC",
-      "theme": "dark",
-      "style": "1",
-      "locale": "en",
-      "enable_publishing": false,
-      "hide_side_toolbar": false,
-      "allow_symbol_change": true,
-      "studies": [
-        "Your_Published_Indicator_Name_Exactly_As_It_Appears@tv-basicstudies"
-      ],
-      "container_id": "tradingview_custom_chart"
+function resetQuantTimer() {
+  quantCountdownSec = 30;
+  const cdEl = document.getElementById("quantCountdown");
+  if (cdEl) cdEl.textContent = `${quantCountdownSec}s`;
+  if (quantTimerInterval) clearInterval(quantTimerInterval);
+  quantTimerInterval = setInterval(() => {
+    quantCountdownSec--;
+    if (quantCountdownSec <= 0) {
+      quantCountdownSec = 30;
+      fetchQuantSignal(false);
+    }
+    const el = document.getElementById("quantCountdown");
+    if (el) el.textContent = `${quantCountdownSec}s`;
+  }, 1000);
+}
+
+async function fetchQuantSignal(manual = false) {
+  const refreshBtn = document.getElementById("quantRefreshBtn");
+  if (manual && refreshBtn) refreshBtn.classList.add("spinning");
+
+  try {
+    const url = currentQuantExpiry 
+      ? `/api/v1/options-signals/live/${encodeURIComponent(currentQuantExpiry)}`
+      : `/api/v1/options-signals/live`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    quantSignalData = await res.json();
+
+    // Populate Expiry Dropdown
+    const expSelect = document.getElementById("quantExpirySelect");
+    if (expSelect && quantSignalData.available_expiries && quantSignalData.available_expiries.length > 0) {
+      if (!currentQuantExpiry) currentQuantExpiry = quantSignalData.expiry || quantSignalData.available_expiries[0];
+      expSelect.innerHTML = quantSignalData.available_expiries.map(exp => 
+        `<option value="${exp}" ${exp === currentQuantExpiry ? 'selected' : ''}>${exp} ${exp === quantSignalData.available_expiries[0] ? '(Nearest Live)' : ''}</option>`
+      ).join("");
+    }
+
+    renderQuantDashboard(quantSignalData);
+    resetQuantTimer();
+  } catch (err) {
+    console.error("Failed to fetch quant signals:", err);
+  } finally {
+    if (refreshBtn) refreshBtn.classList.remove("spinning");
+  }
+}
+
+function renderQuantDashboard(data) {
+  if (!data) return;
+
+  const spot = data.spot_price || 0;
+  const score = data.composite_score || 0;
+
+  // 1. Spot Price Display
+  const spotEl = document.getElementById("quantSpotDisplay");
+  if (spotEl) spotEl.textContent = `BTC Spot: $${fmt(spot)}`;
+
+  // 2. Score & Primary Signal Badge
+  const scoreNumEl = document.getElementById("quantScoreNum");
+  if (scoreNumEl) {
+    const sign = score > 0 ? "+" : "";
+    scoreNumEl.textContent = `${sign}${score.toFixed(2)}`;
+    if (score >= 55) scoreNumEl.style.color = "#00ff9d";
+    else if (score >= 20) scoreNumEl.style.color = "#0ecb81";
+    else if (score <= -55) scoreNumEl.style.color = "#ff4d4d";
+    else if (score <= -20) scoreNumEl.style.color = "#f6465d";
+    else scoreNumEl.style.color = "var(--binance-yellow)";
+  }
+
+  const signalBadge = document.getElementById("quantPrimarySignal");
+  if (signalBadge) {
+    signalBadge.textContent = data.primary_signal.replace(/_/g, " ");
+    signalBadge.className = "signal-badge-pill";
+    if (data.primary_signal === "STRONG_BUY") signalBadge.classList.add("signal-pill-strong-buy");
+    else if (data.primary_signal === "BUY") signalBadge.classList.add("signal-pill-buy");
+    else if (data.primary_signal === "STRONG_SELL") signalBadge.classList.add("signal-pill-strong-sell");
+    else if (data.primary_signal === "SELL") signalBadge.classList.add("signal-pill-sell");
+    else signalBadge.classList.add("signal-pill-neutral");
+  }
+
+  // 3. Gauge Needle Position (-100 to +100 -> 0% to 100%)
+  const needle = document.getElementById("quantGaugeNeedle");
+  if (needle) {
+    const clampedScore = Math.max(-100, Math.min(100, score));
+    const needleLeft = ((clampedScore + 100) / 200) * 100;
+    needle.style.left = `${Math.max(3, Math.min(97, needleLeft))}%`;
+  }
+
+  // 4. Strategy & Regime
+  const stratText = document.getElementById("quantStrategyText");
+  if (stratText) stratText.textContent = data.recommended_strategy || "No strategy recommendation available.";
+
+  const regimeBadge = document.getElementById("quantRegimeBadge");
+  const regimeText = document.getElementById("quantRegimeText");
+  const netGexText = document.getElementById("quantNetGexText");
+  const gexMetrics = data.metrics_breakdown?.gex_metrics || {};
+
+  if (regimeBadge && regimeText) {
+    if (data.regime === "POSITIVE_GAMMA_MEAN_REVERTING") {
+      regimeBadge.className = "regime-badge regime-pos-gamma";
+      regimeText.textContent = "POSITIVE GAMMA (MEAN REVERTING)";
+    } else {
+      regimeBadge.className = "regime-badge regime-neg-gamma";
+      regimeText.textContent = "NEGATIVE GAMMA (VOLATILE BREAKOUT)";
+    }
+  }
+
+  if (netGexText && gexMetrics.net_gex_usd_m !== undefined) {
+    const gexSign = gexMetrics.net_gex_usd_m > 0 ? "+" : "";
+    netGexText.textContent = `Net GEX: ${gexSign}$${gexMetrics.net_gex_usd_m}M`;
+  }
+
+  // 5. Key Structural Institutional Levels
+  const levels = data.key_levels || {};
+  const putWall = levels.support_put_wall || spot * 0.95;
+  const callWall = levels.resistance_call_wall || spot * 1.05;
+  const maxPain = levels.max_pain_magnet || spot;
+  const zeroGamma = levels.zero_gamma_flip || spot;
+
+  setElText("lvlPutWall", `$${fmt(putWall)}`);
+  setElText("lvlCallWall", `$${fmt(callWall)}`);
+  setElText("lvlMaxPain", `$${fmt(maxPain)}`);
+  setElText("lvlZeroGamma", `$${fmt(zeroGamma)}`);
+
+  const putDiff = ((putWall - spot) / spot) * 100;
+  const callDiff = ((callWall - spot) / spot) * 100;
+  const painDiff = ((maxPain - spot) / spot) * 100;
+  const zeroDiff = ((zeroGamma - spot) / spot) * 100;
+
+  setElText("lvlPutDiff", `${putDiff >= 0 ? '+' : ''}${putDiff.toFixed(2)}% vs Spot`);
+  setElText("lvlCallDiff", `${callDiff >= 0 ? '+' : ''}${callDiff.toFixed(2)}% vs Spot`);
+  setElText("lvlPainDiff", `${painDiff >= 0 ? '+' : ''}${painDiff.toFixed(2)}% vs Spot`);
+  setElText("lvlZeroDiff", `${zeroDiff >= 0 ? '+' : ''}${zeroDiff.toFixed(2)}% vs Spot`);
+
+  // Price Channel Marker
+  const channelWidth = Math.max(1, callWall - putWall);
+  const spotRelPos = Math.max(0, Math.min(1, (spot - putWall) / channelWidth));
+  const channelMarker = document.getElementById("channelSpotMarker");
+  if (channelMarker) channelMarker.style.left = `${(spotRelPos * 100).toFixed(1)}%`;
+
+  setElText("channelPutLabel", `Put Wall: $${fmt(putWall)}`);
+  setElText("channelSpotLabel", `Spot: $${fmt(spot)} (${(spotRelPos * 100).toFixed(0)}% in range)`);
+  setElText("channelCallLabel", `Call Wall: $${fmt(callWall)}`);
+
+  const spotStatus = document.getElementById("channelSpotStatus");
+  if (spotStatus) {
+    if (spot > callWall) {
+      spotStatus.textContent = "Above Call Wall (Breakout Risk)";
+      spotStatus.style.color = "#00ff9d";
+    } else if (spot < putWall) {
+      spotStatus.textContent = "Below Put Wall (Breakdown Risk)";
+      spotStatus.style.color = "#ff4d4d";
+    } else {
+      spotStatus.textContent = "Within Put-Call Channel (Mean Reversion)";
+      spotStatus.style.color = "var(--binance-yellow)";
+    }
+  }
+
+  // 6. 5-Factor Component Breakdown
+  const scores = data.component_scores || {};
+  const oiMetrics = data.metrics_breakdown?.oi_metrics || {};
+  const pcrMetrics = data.metrics_breakdown?.pcr_metrics || {};
+  const skewMetrics = data.metrics_breakdown?.skew_metrics || {};
+  const painMetrics = data.metrics_breakdown?.max_pain_metrics || {};
+
+  renderBidirectionalBar("barWallPos", "barWallNeg", "valWallScore", scores["oi_wall_positioning (25%)"] || 0);
+  renderBidirectionalBar("barFlowPos", "barFlowNeg", "valFlowScore", scores["intraday_oi_flow (25%)"] || 0);
+  renderBidirectionalBar("barPcrPos", "barPcrNeg", "valPcrScore", scores["pcr_sentiment (20%)"] || 0);
+  renderBidirectionalBar("barSkewPos", "barSkewNeg", "valSkewScore", scores["iv_25d_skew (15%)"] || 0);
+  renderBidirectionalBar("barPainPos", "barPainNeg", "valPainScore", scores["max_pain_gravity (15%)"] || 0);
+
+  setElText("subWallNote", `Support: $${fmt(putWall)} | Resistance: $${fmt(callWall)}`);
+  setElText("subFlowNote", `Net Put Writing: ${fmt(oiMetrics.net_put_oi_change || 0)} | Net Call Writing: ${fmt(oiMetrics.net_call_oi_change || 0)}`);
+  setElText("subPcrNote", `PCR (OI): ${pcrMetrics.pcr_oi || 0} | PCR (Vol): ${pcrMetrics.pcr_volume || 0}`);
+  setElText("subSkewNote", `25d Put IV: ${skewMetrics.iv_25d_put || 0}% | 25d Call IV: ${skewMetrics.iv_25d_call || 0}% (Skew: ${skewMetrics.skew_25d_pct || 0}%)`);
+  setElText("subPainNote", `Max Pain: $${fmt(painMetrics.max_pain_strike || maxPain)} (Distance: ${painMetrics.distance_pct || 0}%)`);
+
+  // 7. Render Strike Chart
+  renderQuantChart();
+}
+
+function setElText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function renderBidirectionalBar(posId, negId, valId, score) {
+  const valEl = document.getElementById(valId);
+  const posEl = document.getElementById(posId);
+  const negEl = document.getElementById(negId);
+  if (!valEl || !posEl || !negEl) return;
+
+  const clamped = Math.max(-100, Math.min(100, score));
+  const sign = clamped > 0 ? "+" : "";
+  valEl.textContent = `${sign}${clamped.toFixed(2)}`;
+  valEl.style.color = clamped > 0 ? "#0ecb81" : clamped < 0 ? "#f6465d" : "var(--text-muted)";
+
+  // Width is half of 100% since center is at 50%
+  const widthPct = (Math.abs(clamped) / 100) * 50;
+  if (clamped >= 0) {
+    posEl.style.width = `${widthPct}%`;
+    negEl.style.width = "0%";
+  } else {
+    negEl.style.width = `${widthPct}%`;
+    posEl.style.width = "0%";
+  }
+}
+
+// Strike-by-Strike Call vs Put OI & GEX Chart Canvas Renderer
+function renderQuantChart() {
+  const canvas = document.getElementById("quantStrikeCanvas");
+  if (!canvas || !quantSignalData) return;
+
+  const strikesData = quantSignalData.strikes_chart_data || [];
+  setElText("chartStrikeCount", `${strikesData.length} Strikes Analyzed`);
+  if (strikesData.length === 0) return;
+
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const W = rect.width;
+  const H = rect.height;
+  const padL = 60, padR = 40, padT = 30, padB = 40;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Determine Max Value based on mode
+  let maxVal = 0;
+  strikesData.forEach(s => {
+    if (quantChartMode === "gex") {
+      const gex = Math.max(Math.abs(s.call_gamma * s.call_oi), Math.abs(s.put_gamma * s.put_oi));
+      if (gex > maxVal) maxVal = gex;
+    } else {
+      if (s.call_oi > maxVal) maxVal = s.call_oi;
+      if (s.put_oi > maxVal) maxVal = s.put_oi;
+    }
+  });
+  if (maxVal === 0) maxVal = 100;
+  maxVal *= 1.15; // padding top
+
+  // Draw Horizontal Gridlines
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+  ctx.lineWidth = 1;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+  ctx.font = "10px Inter, sans-serif";
+  ctx.textAlign = "right";
+
+  const gridSteps = 4;
+  for (let i = 0; i <= gridSteps; i++) {
+    const y = padT + (chartH / gridSteps) * i;
+    const val = maxVal * (1 - i / gridSteps);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(W - padR, y);
+    ctx.stroke();
+    ctx.fillText(fmt(val), padL - 8, y + 3);
+  }
+
+  // Draw Strikes & Bars
+  const n = strikesData.length;
+  const slotW = chartW / n;
+  const barW = Math.max(2, slotW * 0.38);
+
+  const spot = quantSignalData.spot_price || 0;
+  const levels = quantSignalData.key_levels || {};
+  const putWall = levels.support_put_wall;
+  const callWall = levels.resistance_call_wall;
+  const maxPain = levels.max_pain_magnet;
+  const zeroGamma = levels.zero_gamma_flip;
+
+  // Track coordinate mapping for vertical reference lines
+  const strikePositions = [];
+
+  strikesData.forEach((s, idx) => {
+    const xCenter = padL + idx * slotW + slotW / 2;
+    strikePositions.push({ strike: s.strike, x: xCenter, data: s });
+
+    const callVal = quantChartMode === "gex" ? (s.call_gamma * s.call_oi) : s.call_oi;
+    const putVal = quantChartMode === "gex" ? (s.put_gamma * s.put_oi) : s.put_oi;
+
+    const callH = (callVal / maxVal) * chartH;
+    const putH = (putVal / maxVal) * chartH;
+
+    // Call Bar (Left of center, Green)
+    ctx.fillStyle = "#0ecb81";
+    ctx.fillRect(xCenter - barW - 1, padT + chartH - callH, barW, callH);
+
+    // Put Bar (Right of center, Red)
+    ctx.fillStyle = "#f6465d";
+    ctx.fillRect(xCenter + 1, padT + chartH - putH, barW, putH);
+
+    // X-Axis Strike Label (Sample every few strikes to prevent overlap)
+    const step = n > 30 ? 5 : n > 15 ? 3 : 1;
+    if (idx % step === 0 || idx === n - 1) {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.textAlign = "center";
+      ctx.fillText(`$${(s.strike / 1000).toFixed(0)}k`, xCenter, H - padB + 16);
+    }
+  });
+
+  // Helper to interpolate X coordinate for any price
+  function getXForPrice(price) {
+    if (!price || strikePositions.length === 0) return null;
+    if (price <= strikePositions[0].strike) return strikePositions[0].x;
+    if (price >= strikePositions[strikePositions.length - 1].strike) return strikePositions[strikePositions.length - 1].x;
+
+    for (let i = 0; i < strikePositions.length - 1; i++) {
+      const p1 = strikePositions[i];
+      const p2 = strikePositions[i + 1];
+      if (price >= p1.strike && price <= p2.strike) {
+        const ratio = (price - p1.strike) / (p2.strike - p1.strike);
+        return p1.x + ratio * (p2.x - p1.x);
+      }
+    }
+    return null;
+  }
+
+  // Draw Vertical Key Level Lines
+  function drawRefLine(price, color, label, isDashed = false) {
+    const x = getXForPrice(price);
+    if (x === null) return;
+
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.8;
+    if (isDashed) ctx.setLineDash([4, 4]);
+
+    ctx.beginPath();
+    ctx.moveTo(x, padT);
+    ctx.lineTo(x, padT + chartH);
+    ctx.stroke();
+
+    // Line Label Flag
+    ctx.setLineDash([]);
+    ctx.fillStyle = color;
+    ctx.font = "bold 9px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(label, x, padT - 8);
+    ctx.restore();
+  }
+
+  drawRefLine(putWall, "#f6465d", "PUT WALL");
+  drawRefLine(callWall, "#0ecb81", "CALL WALL");
+  drawRefLine(maxPain, "#bd5cff", "MAX PAIN");
+  drawRefLine(zeroGamma, "#00c0ef", "0-GAMMA");
+  drawRefLine(spot, "var(--binance-yellow)", `SPOT ($${fmt(spot)})`, true);
+
+  // Attach Hover Listener for Tooltip
+  canvas.onmousemove = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const tooltip = document.getElementById("chartTooltip");
+    if (!tooltip || strikePositions.length === 0) return;
+
+    // Find nearest strike
+    let closest = strikePositions[0];
+    let minDist = Math.abs(mx - closest.x);
+    for (const sp of strikePositions) {
+      const dist = Math.abs(mx - sp.x);
+      if (dist < minDist) {
+        minDist = dist;
+        closest = sp;
+      }
+    }
+
+    if (minDist < slotW * 2) {
+      const d = closest.data;
+      tooltip.style.display = "block";
+      tooltip.style.left = `${Math.min(W - 170, Math.max(10, mx + 15))}px`;
+      tooltip.style.top = `${Math.max(10, e.clientY - rect.top - 70)}px`;
+      tooltip.innerHTML = `
+        <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Strike: $${fmt(d.strike)}</div>
+        <div style="color: #0ecb81;">Call OI: <strong>${fmt(d.call_oi)}</strong> (${(d.call_iv * 100).toFixed(1)}% IV)</div>
+        <div style="color: #f6465d;">Put OI: <strong>${fmt(d.put_oi)}</strong> (${(d.put_iv * 100).toFixed(1)}% IV)</div>
+        <div style="color: #bd5cff; font-size: 10px; margin-top: 2px;">Gamma: ${d.call_gamma ? d.call_gamma.toFixed(6) : '-'}</div>
+      `;
+    } else {
+      tooltip.style.display = "none";
+    }
+  };
+
+  canvas.onmouseleave = () => {
+    const tooltip = document.getElementById("chartTooltip");
+    if (tooltip) tooltip.style.display = "none";
+  };
+}
+
+// =========================================================
+// GAMMA EXPOSURE MAP & ROPE PHYSICS CONTROLLER
+// =========================================================
+let gammaMapData = null;
+let gammaMapTimerInterval = null;
+let gammaMapCountdownVal = 30;
+let gammaMapSelectedExpiry = "";
+let isGammaMapFetching = false;
+let gmapAnimFrameId = null;
+let gmapTargetY = 280; // target spot card center Y
+let gmapCurrentY = 280; // smoothed spot card center Y
+
+function startRopePhysics() {
+  if (gmapAnimFrameId) cancelAnimationFrame(gmapAnimFrameId);
+
+  function physicsStep() {
+    const stage = document.getElementById("gammaMapStage");
+    const spotCard = document.getElementById("cardSpotPrice");
+    if (!stage || !spotCard || document.getElementById("gammaMapView").style.display === "none") {
+      return;
+    }
+
+    // Interpolate gmapCurrentY towards gmapTargetY (smooth spring lerp)
+    gmapCurrentY += (gmapTargetY - gmapCurrentY) * 0.08;
+
+    // Continuous harmonic physical wave / breathing
+    const time = performance.now() / 1000;
+    const subtleWave = Math.sin(time * 2.5) * 4.5 + Math.cos(time * 1.8) * 2.0;
+    const displayY = gmapCurrentY + subtleWave;
+
+    // Position Spot Card
+    spotCard.style.top = `${displayY}px`;
+
+    // Update SVG ropes and tether lines
+    updateSvgRopes(displayY, time);
+
+    gmapAnimFrameId = requestAnimationFrame(physicsStep);
+  }
+
+  gmapAnimFrameId = requestAnimationFrame(physicsStep);
+}
+
+function updateSvgRopes(spotY, time) {
+  const stage = document.getElementById("gammaMapStage");
+  const spotCard = document.getElementById("cardSpotPrice");
+  const topCard = document.getElementById("cardGammaWall");
+  const botCard = document.getElementById("cardPutWall");
+  if (!stage || !spotCard || !topCard || !botCard) return;
+
+  const stageRect = stage.getBoundingClientRect();
+  const spotRect = spotCard.getBoundingClientRect();
+  const stageW = stageRect.width;
+  const stageH = stageRect.height;
+
+  const cardHalfW = spotRect.width / 2;
+  const cardHalfH = spotRect.height / 2;
+  const centerX = stageW / 2;
+
+  // Anchor points for horizontal elastic rope (anchored at 50% stage height)
+  const leftAnchorX = 140; // right of price ladder
+  const leftAnchorY = stageH * 0.5;
+  const rightAnchorX = stageW - 25;
+  const rightAnchorY = stageH * 0.5;
+
+  const cardLeftX = centerX - cardHalfW;
+  const cardRightX = centerX + cardHalfW;
+  const cardY = spotY;
+
+  // Left Rope Bezier Curve:
+  // From (leftAnchorX, leftAnchorY) to (cardLeftX, cardY)
+  const dxL = cardLeftX - leftAnchorX;
+  const dyL = cardY - leftAnchorY;
+  // Dynamic wave & droop
+  const waveL = Math.sin(time * 3.2) * 5.5 + Math.cos(time * 1.5) * 2.5;
+  const droopL = 22 + (cardY / stageH) * 24 + waveL;
+  const cp1xL = leftAnchorX + dxL * 0.42;
+  const cp1yL = leftAnchorY + dyL * 0.15 + droopL;
+  const cp2xL = cardLeftX - dxL * 0.38;
+  const cp2yL = cardY - dyL * 0.15 + droopL * 0.75;
+  const pathD_L = `M ${leftAnchorX} ${leftAnchorY} C ${cp1xL} ${cp1yL}, ${cp2xL} ${cp2yL}, ${cardLeftX} ${cardY}`;
+
+  const leftOuter = document.getElementById("leftElasticRopeOuter");
+  const leftInner = document.getElementById("leftElasticRopeInner");
+  if (leftOuter) leftOuter.setAttribute("d", pathD_L);
+  if (leftInner) leftInner.setAttribute("d", pathD_L);
+
+  // Right Rope Bezier Curve:
+  // From (cardRightX, cardY) to (rightAnchorX, rightAnchorY)
+  const dxR = rightAnchorX - cardRightX;
+  const dyR = rightAnchorY - cardY;
+  const waveR = Math.cos(time * 3.0 + 1.2) * 5.5 + Math.sin(time * 1.7) * 2.5;
+  const droopR = 22 + (cardY / stageH) * 24 + waveR;
+  const cp1xR = cardRightX + dxR * 0.38;
+  const cp1yR = cardY + dyR * 0.15 + droopR * 0.75;
+  const cp2xR = rightAnchorX - dxR * 0.42;
+  const cp2yR = rightAnchorY - dyR * 0.15 + droopR;
+  const pathD_R = `M ${cardRightX} ${cardY} C ${cp1xR} ${cp1yR}, ${cp2xR} ${cp2yR}, ${rightAnchorX} ${rightAnchorY}`;
+
+  const rightOuter = document.getElementById("rightElasticRopeOuter");
+  const rightInner = document.getElementById("rightElasticRopeInner");
+  if (rightOuter) rightOuter.setAttribute("d", pathD_R);
+  if (rightInner) rightInner.setAttribute("d", pathD_R);
+
+  // Update Vertical Tether Lines
+  const tetherTop = document.getElementById("tetherTopLine");
+  const tetherBottom = document.getElementById("tetherBottomLine");
+  if (tetherTop) {
+    tetherTop.setAttribute("x1", centerX);
+    tetherTop.setAttribute("y1", "78");
+    tetherTop.setAttribute("x2", centerX);
+    tetherTop.setAttribute("y2", Math.max(82, cardY - cardHalfH));
+  }
+  if (tetherBottom) {
+    tetherBottom.setAttribute("x1", centerX);
+    tetherBottom.setAttribute("y1", Math.min(stageH - 82, cardY + cardHalfH));
+    tetherBottom.setAttribute("x2", centerX);
+    tetherBottom.setAttribute("y2", `${stageH - 78}`);
+  }
+}
+
+async function fetchGammaMapData(isManual = false) {
+  if (isGammaMapFetching) return;
+  isGammaMapFetching = true;
+
+  const refreshBtn = document.getElementById("gammaRefreshBtn");
+  if (refreshBtn && isManual) {
+    refreshBtn.classList.add("loading");
+    const svg = refreshBtn.querySelector("svg");
+    if (svg) svg.style.animation = "spin 1s linear infinite";
+  }
+
+  try {
+    const url = gammaMapSelectedExpiry
+      ? `/api/v1/gamma-map/live?expiry=${encodeURIComponent(gammaMapSelectedExpiry)}`
+      : `/api/v1/gamma-map/live?expiry_index=0`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    gammaMapData = data;
+    renderGammaMap(data);
+    resetGammaMapTimer();
+  } catch (err) {
+    console.error("Gamma Map fetch failed:", err);
+  } finally {
+    isGammaMapFetching = false;
+    if (refreshBtn) {
+      refreshBtn.classList.remove("loading");
+      const svg = refreshBtn.querySelector("svg");
+      if (svg) svg.style.animation = "none";
+    }
+  }
+}
+
+function renderGammaMap(data) {
+  if (!data) return;
+
+  // 1. Populate Expiry Select if empty
+  const select = document.getElementById("gammaMapExpirySelect");
+  if (select && data.available_expiries && (select.options.length <= 1 || !select.value)) {
+    select.innerHTML = "";
+    data.available_expiries.forEach((exp, idx) => {
+      const opt = document.createElement("option");
+      opt.value = exp;
+      opt.textContent = `${exp}${idx === 0 ? " (Nearest)" : ""}`;
+      if (exp === data.expiry) opt.selected = true;
+      select.appendChild(opt);
     });
-    tvWidgetInitialized = true;
+    gammaMapSelectedExpiry = data.expiry;
+  }
+
+  // 2. Regime & Net GEX
+  const regimeBadge = document.getElementById("gmapRegimeBadge");
+  if (regimeBadge) {
+    if (data.regime === "POSITIVE_GAMMA_MEAN_REVERTING") {
+      regimeBadge.className = "gmap-badge-neon gmap-regime-pos";
+      regimeBadge.textContent = "POSITIVE GAMMA (Mean Reverting)";
+    } else {
+      regimeBadge.className = "gmap-badge-neon gmap-regime-neg";
+      regimeBadge.textContent = "NEGATIVE GAMMA (Volatile / Breakout)";
+    }
+  }
+
+  const netGexBadge = document.getElementById("gmapNetGexBadge");
+  if (netGexBadge) {
+    const sign = data.net_gex_m >= 0 ? "+" : "";
+    netGexBadge.textContent = `Net GEX: ${sign}$${data.net_gex_m}M`;
+  }
+
+  // 3. Top Card: Gamma Wall
+  setElText("gmapGammaWallPrice", `$${fmt(data.gamma_wall_strike)}`);
+  const upSign = data.upside_pct >= 0 ? "+" : "";
+  setElText("gmapUpsideBadge", `${upSign}${data.upside_pct.toFixed(2)}% ▲`);
+
+  // 4. Bottom Card: Put Wall
+  setElText("gmapPutWallPrice", `$${fmt(data.put_wall_strike)}`);
+  setElText("gmapDownsideBadge", `-${Math.abs(data.downside_pct).toFixed(2)}% ▼`);
+
+  // 5. Center Card: Spot Price & Target Y
+  setElText("gmapSpotPrice", `$${fmt(data.spot_price)}`);
+  setElText("gmapChannelStatus", `${data.spot_relative_pct.toFixed(1)}% Channel Height (${data.spot_relative_pct >= 50 ? 'Closer to Gamma Wall' : 'Closer to Put Wall'})`);
+  
+  const diffPut = Math.max(0, data.spot_price - data.put_wall_strike);
+  const diffCall = Math.max(0, data.gamma_wall_strike - data.spot_price);
+  setElText("gmapSpotDiffSummary", `Support: +$${fmt(diffPut)} | Wall: -$${fmt(diffCall)}`);
+
+  // Calculate Target Y inside 560px stage
+  // Usable center Y range: 140px (at Gamma Wall 100%) to 420px (at Put Wall 0%)
+  const topBound = 140;
+  const botBound = 420;
+  const rel = Math.max(0, Math.min(100, data.spot_relative_pct));
+  gmapTargetY = botBound - (rel / 100.0) * (botBound - topBound);
+
+  // 6. Y-Axis Ladder Levels
+  const ladderEl = document.getElementById("gmapLadder");
+  if (ladderEl && data.y_axis_ladder && data.y_axis_ladder.length) {
+    ladderEl.innerHTML = data.y_axis_ladder.map(lvl => `<div class="gmap-ladder-item">$${fmt(lvl)}</div>`).join("");
+  }
+
+  // 7. Zero-Gamma Flip Line
+  const zeroFlip = data.zero_gamma_flip;
+  const topLvl = data.gamma_wall_strike * 1.01;
+  const botLvl = data.put_wall_strike * 0.99;
+  let zeroY = 360;
+  if (topLvl > botLvl) {
+    const zeroRel = (topLvl - zeroFlip) / (topLvl - botLvl);
+    zeroY = 24 + Math.max(0.08, Math.min(0.92, zeroRel)) * (560 - 48);
+  }
+  const zeroLine = document.getElementById("zeroGammaRefLine");
+  const zeroText = document.getElementById("zeroGammaText");
+  if (zeroLine && zeroText) {
+    zeroLine.setAttribute("y1", zeroY);
+    zeroLine.setAttribute("y2", zeroY);
+    zeroText.setAttribute("y", zeroY - 6);
+    zeroText.textContent = `0-GAMMA FLIP ($${fmt(zeroFlip)})`;
+  }
+
+  // 8. Daily Range Predictor Footer
+  const dr = data.daily_range || {};
+  setElText("drExpectedMoveBadge", `Expected 1D Range: ±${dr.expected_move_pct}%`);
+  setElText("drExpectedMoveVal", `±${dr.expected_move_pct}%`);
+  setElText("drRangeLevels", `$${fmt(dr.low_1sd)} - $${fmt(dr.high_1sd)}`);
+  setElText("drAtmIvVal", `${dr.atm_iv_pct}% IV`);
+  setElText("drUpsideRoom", `+${data.upside_pct}% ($${fmt(data.gamma_wall_strike)})`);
+  setElText("drDownsideRoom", `-${data.downside_pct}% ($${fmt(data.put_wall_strike)})`);
+
+  // Render Probability Cards
+  const probGrid = document.getElementById("drProbGrid");
+  if (probGrid && dr.move_probabilities) {
+    const keys = Object.keys(dr.move_probabilities);
+    probGrid.innerHTML = keys.map(k => {
+      const prob = dr.move_probabilities[k];
+      const pctNum = parseFloat(k);
+      const dollarMove = Math.round(data.spot_price * (pctNum / 100));
+      
+      let barColor = "#10b981"; // green
+      if (prob < 5) barColor = "#bd5cff"; // purple
+      else if (prob < 20) barColor = "#f59e0b"; // amber
+      else if (prob < 50) barColor = "#00c0ef"; // cyan
+
+      return `
+        <div class="prob-card">
+          <div class="prob-card-top">
+            <span class="prob-card-target">${k} Move <span style="font-size: 11px; color: var(--text-muted);">(±$${fmt(dollarMove)})</span></span>
+            <span class="prob-card-val" style="color: ${barColor};">${prob}%</span>
+          </div>
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" style="width: ${Math.min(100, prob)}%; background: ${barColor}; box-shadow: 0 0 8px ${barColor};"></div>
+          </div>
+          <div class="prob-card-sub">${prob >= 50 ? 'High probability' : prob >= 20 ? 'Moderate likelihood' : 'Tail breakout risk'}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Start physics animation
+  startRopePhysics();
+}
+
+function changeGammaExpiry(val) {
+  gammaMapSelectedExpiry = val;
+  fetchGammaMapData(true);
+}
+
+function resetGammaMapTimer() {
+  if (gammaMapTimerInterval) clearInterval(gammaMapTimerInterval);
+  gammaMapCountdownVal = 30;
+  setElText("gammaCountdown", `${gammaMapCountdownVal}s`);
+
+  gammaMapTimerInterval = setInterval(() => {
+    gammaMapCountdownVal--;
+    setElText("gammaCountdown", `${gammaMapCountdownVal}s`);
+    if (gammaMapCountdownVal <= 0) {
+      fetchGammaMapData();
+    }
+  }, 1000);
+}
+
+// =========================================================
+// SUPER CHARTS (BINANCE OPTIONS) ENGINE
+// Multi-Asset (BTC, ETH, BNB, SOL) + TradingView Lightweight Charts + Dual Canvas Overlays
+// =========================================================
+
+const SUPER_CHARTS_ASSETS = {
+  BTCUSDT: {
+    symbol: "BTCUSDT",
+    coin: "BTC",
+    badge: "₿",
+    spot: 82120.48,
+    change: "+0.59%",
+    changePositive: true,
+    bvol: "44.10",
+    digits: 2,
+    rawCandles: [
+      [81200,82300,80900,82100], [82100,82600,81400,81500], [81500,81800,80400,80700],
+      [80700,82000,80500,81900], [81900,82100,79600,80900], [80900,82400,80800,82200],
+      [82200,82500,81100,81400], [81400,82300,81200,82150], [82150,82900,81900,82750],
+      [82750,83100,82200,82400], [82400,83200,82100,82950], [82950,83050,82000,82200],
+      [82200,82700,81700,82500], [82500,82800,81600,81850], [81850,82650,81750,82550],
+      [82550,83450,82400,83200], [83200,83350,82300,82500], [82500,82900,82100,82700],
+      [82700,82850,81900,82050], [82050,82200,81200,81450], [81450,81950,81300,81800],
+      [81800,82400,81700,82250], [82250,82380,81950,82120]
+    ],
+    bounds: { min: 79200, max: 85800 },
+    cone: {
+      sigma2Upper: 85350, sigma2Lower: 79550,
+      sigma1Upper: 84150, sigma1Lower: 80350,
+      optimalPath: 83350,
+      bullishPath: 84850,
+      bearishPath: 79800,
+      breakoutProb: "68%"
+    },
+    gex: {
+      callWall: 83000,
+      zeroGamma: 82000,
+      putWall: 80500,
+      maxPain: 82000,
+      netGex: "+$142M",
+      gammaFlip: "$82,000",
+      expectedMove: "$82,100"
+    },
+    heatmap: [
+      { top: 83950, bot: 83050, c1: 'rgba(249, 115, 22, 0.32)', c2: 'rgba(234, 179, 8, 0.52)' },
+      { top: 82900, bot: 82300, c1: 'rgba(56, 189, 248, 0.16)', c2: 'rgba(14, 165, 233, 0.28)' },
+      { top: 80650, bot: 79850, c1: 'rgba(56, 189, 248, 0.24)', c2: 'rgba(234, 179, 8, 0.45)' }
+    ],
+    patterns: { sweepIdx: 15, fvgIdx: 19 },
+    insight: "BTC consolidates below $83,000 Call Wall. High dealer gamma suggests pin risk. Expected 24h range: $81,200 - $82,800.",
+    expectedRange: "$81,200 - $82,800",
+    sentiment: { orderFlow: 72, callSkew: 64 },
+    momentum: "Bullish"
+  },
+  ETHUSDT: {
+    symbol: "ETHUSDT",
+    coin: "ETH",
+    badge: "Ξ",
+    spot: 2418.08,
+    change: "-0.87%",
+    changePositive: false,
+    bvol: "52.30",
+    digits: 2,
+    rawCandles: [
+      [2380,2425,2370,2410], [2410,2440,2395,2420], [2420,2450,2410,2435],
+      [2435,2465,2420,2455], [2455,2470,2430,2440], [2440,2455,2415,2425],
+      [2425,2445,2410,2430], [2430,2460,2420,2450], [2450,2480,2440,2475],
+      [2475,2490,2450,2460], [2460,2475,2430,2445], [2445,2460,2425,2430],
+      [2430,2455,2415,2440], [2440,2465,2425,2435], [2435,2470,2430,2465],
+      [2465,2495,2450,2485], [2485,2490,2440,2450], [2450,2470,2430,2440],
+      [2440,2455,2415,2425], [2425,2440,2395,2405], [2405,2425,2390,2415],
+      [2415,2430,2405,2425], [2425,2430,2410,2418.08]
+    ],
+    bounds: { min: 2320, max: 2540 },
+    cone: {
+      sigma2Upper: 2520, sigma2Lower: 2340,
+      sigma1Upper: 2480, sigma1Lower: 2375,
+      optimalPath: 2465,
+      bullishPath: 2505,
+      bearishPath: 2355,
+      breakoutProb: "62%"
+    },
+    gex: {
+      callWall: 2480,
+      zeroGamma: 2420,
+      putWall: 2360,
+      maxPain: 2400,
+      netGex: "+$58M",
+      gammaFlip: "$2,420",
+      expectedMove: "$2,425"
+    },
+    heatmap: [
+      { top: 2495, bot: 2470, c1: 'rgba(249, 115, 22, 0.32)', c2: 'rgba(234, 179, 8, 0.52)' },
+      { top: 2450, bot: 2425, c1: 'rgba(56, 189, 248, 0.16)', c2: 'rgba(14, 165, 233, 0.28)' },
+      { top: 2380, bot: 2355, c1: 'rgba(56, 189, 248, 0.24)', c2: 'rgba(234, 179, 8, 0.45)' }
+    ],
+    patterns: { sweepIdx: 15, fvgIdx: 19 },
+    insight: "ETH testing $2,420 Zero-Gamma pivot. Call open interest building at $2,480. Expected 24h range: $2,380 - $2,460.",
+    expectedRange: "$2,380 - $2,460",
+    sentiment: { orderFlow: 58, callSkew: 52 },
+    momentum: "Neutral-Bullish"
+  },
+  BNBUSDT: {
+    symbol: "BNBUSDT",
+    coin: "BNB",
+    badge: "B",
+    spot: 723.88,
+    change: "+0.33%",
+    changePositive: true,
+    bvol: "38.90",
+    digits: 2,
+    rawCandles: [
+      [710,722,708,718], [718,726,714,720], [720,728,716,724],
+      [724,732,720,728], [728,735,722,725], [725,730,718,722],
+      [722,728,716,724], [724,734,720,730], [730,738,726,734],
+      [734,742,730,736], [736,740,728,732], [732,738,726,728],
+      [728,734,722,730], [730,736,725,727], [727,735,724,732],
+      [732,745,730,740], [740,742,728,732], [732,738,726,730],
+      [730,734,722,725], [725,728,716,719], [719,725,715,721],
+      [721,726,718,723], [723,727,720,723.88]
+    ],
+    bounds: { min: 698, max: 755 },
+    cone: {
+      sigma2Upper: 748, sigma2Lower: 704,
+      sigma1Upper: 738, sigma1Lower: 714,
+      optimalPath: 734,
+      bullishPath: 745,
+      bearishPath: 708,
+      breakoutProb: "65%"
+    },
+    gex: {
+      callWall: 740,
+      zeroGamma: 725,
+      putWall: 705,
+      maxPain: 720,
+      netGex: "+$34M",
+      gammaFlip: "$725",
+      expectedMove: "$726"
+    },
+    heatmap: [
+      { top: 744, bot: 738, c1: 'rgba(249, 115, 22, 0.32)', c2: 'rgba(234, 179, 8, 0.52)' },
+      { top: 732, bot: 725, c1: 'rgba(56, 189, 248, 0.16)', c2: 'rgba(14, 165, 233, 0.28)' },
+      { top: 712, bot: 704, c1: 'rgba(56, 189, 248, 0.24)', c2: 'rgba(234, 179, 8, 0.45)' }
+    ],
+    patterns: { sweepIdx: 15, fvgIdx: 19 },
+    insight: "BNB holding firm above $720 Max Pain floor. Moderate dealer gamma pin expected between $715 - $735.",
+    expectedRange: "$712 - $738",
+    sentiment: { orderFlow: 68, callSkew: 60 },
+    momentum: "Bullish"
+  },
+  SOLUSDT: {
+    symbol: "SOLUSDT",
+    coin: "SOL",
+    badge: "S",
+    spot: 104.05,
+    change: "-0.75%",
+    changePositive: false,
+    bvol: "64.80",
+    digits: 2,
+    rawCandles: [
+      [101.5,105.2,100.8,104.0], [104.0,106.5,102.5,104.8], [104.8,107.0,103.5,105.5],
+      [105.5,108.2,104.2,107.0], [107.0,108.8,105.0,106.2], [106.2,107.5,104.0,105.0],
+      [105.0,106.8,103.5,105.2], [105.2,108.0,104.5,107.0], [107.0,109.8,106.0,108.8],
+      [108.8,110.5,107.0,108.0], [108.0,109.5,105.5,106.8], [106.8,108.0,105.0,105.8],
+      [105.8,107.5,104.2,106.2], [106.2,108.0,105.0,105.5], [105.5,108.5,105.0,107.5],
+      [107.5,111.0,106.5,109.5], [109.5,110.2,106.0,107.0], [107.0,108.5,105.0,106.0],
+      [106.0,107.2,104.0,104.8], [104.8,105.5,102.0,103.2], [103.2,104.8,102.5,103.8],
+      [103.8,105.2,103.0,104.5], [104.5,105.0,103.5,104.05]
+    ],
+    bounds: { min: 96, max: 115 },
+    cone: {
+      sigma2Upper: 112.5, sigma2Lower: 97.5,
+      sigma1Upper: 108.5, sigma1Lower: 100.5,
+      optimalPath: 106.8,
+      bullishPath: 110.5,
+      bearishPath: 99.2,
+      breakoutProb: "59%"
+    },
+    gex: {
+      callWall: 110.0,
+      zeroGamma: 105.0,
+      putWall: 98.0,
+      maxPain: 102.0,
+      netGex: "+$18M",
+      gammaFlip: "$105.0",
+      expectedMove: "$104.5"
+    },
+    heatmap: [
+      { top: 111.2, bot: 108.5, c1: 'rgba(249, 115, 22, 0.32)', c2: 'rgba(234, 179, 8, 0.52)' },
+      { top: 107.0, bot: 104.5, c1: 'rgba(56, 189, 248, 0.16)', c2: 'rgba(14, 165, 233, 0.28)' },
+      { top: 100.0, bot: 97.2, c1: 'rgba(56, 189, 248, 0.24)', c2: 'rgba(234, 179, 8, 0.45)' }
+    ],
+    patterns: { sweepIdx: 15, fvgIdx: 19 },
+    insight: "SOL in tight volatility contraction around $104. Support cluster at $100-$102 Put Wall. Expected 24h range: $101 - $108.",
+    expectedRange: "$101 - $108",
+    sentiment: { orderFlow: 54, callSkew: 50 },
+    momentum: "Neutral"
+  }
+};
+
+let currentScAsset = 'BTCUSDT';
+let currentScTf = '15m';
+let scChart = null;
+let scCandleSeries = null;
+let scBoundsSeries = null;
+let scPhase = 0;
+let scAnimRunning = false;
+let scOverlaysVisible = true;
+let scActiveTool = 'crosshair';
+let scTvData = [];
+let scLastCandle = null;
+
+function drawScPillBadge(context, x, y, text, bg, borderColor, textColor) {
+  context.save();
+  context.font = '600 10px Inter, sans-serif';
+  const w = context.measureText(text).width + 20;
+  context.fillStyle = bg;
+  context.strokeStyle = borderColor;
+  context.lineWidth = 1.2;
+  context.shadowColor = borderColor;
+  context.shadowBlur = 8;
+  context.beginPath();
+  if (typeof context.roundRect === 'function') {
+    context.roundRect(x, y, w, 20, 10);
+  } else {
+    context.rect(x, y, w, 20);
+  }
+  context.fill();
+  context.stroke();
+  context.shadowBlur = 0;
+  context.fillStyle = textColor;
+  context.fillText(text, x + 10, y + 13.5);
+  context.restore();
+}
+
+function initSuperCharts() {
+  const container = document.getElementById('tv-chart');
+  if (!container) return;
+
+  if (typeof LightweightCharts === 'undefined') {
+    console.warn("LightweightCharts library not loaded yet.");
+    return;
+  }
+
+  if (scChart) {
+    resizeSuperCharts();
+    return;
+  }
+
+  // 1. INITIALIZE TRADINGVIEW LIGHTWEIGHT CHART
+  scChart = LightweightCharts.createChart(container, {
+    layout: {
+      background: { type: 'solid', color: '#0d0a18' },
+      textColor: '#94a3b8',
+      fontFamily: 'JetBrains Mono, monospace',
+      fontSize: 11
+    },
+    grid: {
+      vertLines: { color: 'rgba(139, 92, 246, 0.07)' },
+      horzLines: { color: 'rgba(139, 92, 246, 0.07)' }
+    },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: {
+      borderColor: 'rgba(139, 92, 246, 0.25)',
+      scaleMargins: { top: 0.08, bottom: 0.08 }
+    },
+    timeScale: {
+      borderColor: 'rgba(139, 92, 246, 0.25)',
+      timeVisible: true,
+      rightOffset: 30,
+      barSpacing: 13
+    }
+  });
+
+  scCandleSeries = scChart.addCandlestickSeries({
+    upColor: '#10b981',
+    downColor: '#f43f5e',
+    borderVisible: false,
+    wickUpColor: '#10b981',
+    wickDownColor: '#f43f5e'
+  });
+
+  scBoundsSeries = scChart.addLineSeries({
+    color: 'transparent',
+    lineWidth: 1,
+    priceLineVisible: false,
+    lastValueVisible: false
+  });
+
+  scChart.timeScale().subscribeVisibleLogicalRangeChange(renderScMainOverlay);
+  scChart.subscribeCrosshairMove((param) => {
+    if (param && param.seriesPrices && scCandleSeries) {
+      const price = param.seriesPrices.get(scCandleSeries);
+      if (price) {
+        updateScOhlcDisplay(price.open, price.high, price.low, price.close);
+      }
+    }
+    renderScMainOverlay();
+  });
+
+  const chkH = document.getElementById('chk-heatmap');
+  const chkC = document.getElementById('chk-cone');
+  const chkG = document.getElementById('chk-gex');
+  const chkS = document.getElementById('chk-signals');
+  [chkH, chkC, chkG, chkS].forEach(el => {
+    if (el) el.addEventListener('change', renderScMainOverlay);
+  });
+
+  loadSuperChartsAssetData(currentScAsset);
+  resizeSuperCharts();
+
+  if (window.ResizeObserver && !window._scResizeObserver) {
+    window._scResizeObserver = new ResizeObserver(() => {
+      const scView = document.getElementById('superChartsView');
+      if (scView && scView.style.display !== 'none') {
+        resizeSuperCharts();
+      }
+    });
+    const scView = document.getElementById('superChartsView');
+    if (scView) window._scResizeObserver.observe(scView);
+  }
+
+  if (!scAnimRunning) {
+    scAnimRunning = true;
+    requestAnimationFrame(animateScLoop);
+  }
+}
+
+function getTfSeconds(tf) {
+  if (tf === '5m') return 300;
+  if (tf === '1h') return 3600;
+  if (tf === '4h') return 14400;
+  if (tf === '1D') return 86400;
+  return 900; // default 15m
+}
+
+function loadSuperChartsAssetData(symbol) {
+  const asset = SUPER_CHARTS_ASSETS[symbol] || SUPER_CHARTS_ASSETS.BTCUSDT;
+  const tfSec = getTfSeconds(currentScTf);
+  const nowSec = Math.floor(Date.now() / 1000);
+  const count = asset.rawCandles.length;
+  const baseTime = nowSec - count * tfSec;
+
+  scTvData = asset.rawCandles.map((c, i) => ({
+    time: baseTime + i * tfSec,
+    open: c[0],
+    high: c[1],
+    low: c[2],
+    close: c[3]
+  }));
+
+  if (scCandleSeries) {
+    scCandleSeries.setData(scTvData);
+  }
+
+  if (scBoundsSeries && scTvData.length > 0) {
+    scBoundsSeries.setData([
+      { time: scTvData[0].time, value: asset.bounds.min },
+      { time: scTvData[scTvData.length - 1].time, value: asset.bounds.max }
+    ]);
+  }
+
+  scLastCandle = scTvData[scTvData.length - 1];
+
+  // Update Top OHLC
+  updateScOhlcDisplay(scLastCandle.open, scLastCandle.high, scLastCandle.low, scLastCandle.close, asset.change);
+
+  // Update Right Sidebar Insights
+  const insightText = document.getElementById('sc-insight-text');
+  if (insightText) {
+    insightText.innerHTML = `${asset.coin} consolidates near <strong style="color: #fb7185; font-family: 'JetBrains Mono', monospace;">$${Number(asset.gex.callWall).toLocaleString()} Call Wall</strong>. High dealer gamma suggests pin risk.`;
+  }
+  const expRange = document.getElementById('sc-expected-range');
+  if (expRange) {
+    expRange.innerText = asset.expectedRange;
+  }
+
+  // Update Gauges
+  const g1Val = document.getElementById('sc-gauge1-val');
+  if (g1Val) g1Val.innerText = `${asset.sentiment.orderFlow}% Bull`;
+  const g2Val = document.getElementById('sc-gauge2-val');
+  if (g2Val) g2Val.innerText = `${asset.sentiment.callSkew}% Call`;
+
+  // Update Gauge Needles
+  updateScGaugeNeedle('sc-gauge1-needle', 'sc-gauge1-arc', asset.sentiment.orderFlow);
+  updateScGaugeNeedle('sc-gauge2-needle', 'sc-gauge2-arc', asset.sentiment.callSkew);
+
+  // Update Momentum
+  const momBadge = document.getElementById('sc-momentum-badge');
+  if (momBadge) momBadge.innerText = asset.momentum;
+
+  // Update Structural Metrics
+  const mNetGex = document.getElementById('sc-metric-netgex');
+  if (mNetGex) mNetGex.innerText = asset.gex.netGex;
+  const mGammaFlip = document.getElementById('sc-metric-gammaflip');
+  if (mGammaFlip) mGammaFlip.innerText = asset.gex.gammaFlip;
+  const mMaxPain = document.getElementById('sc-metric-maxpain');
+  if (mMaxPain) mMaxPain.innerText = `$${Number(asset.gex.maxPain).toLocaleString()}`;
+  const mExpMove = document.getElementById('sc-metric-expmove');
+  if (mExpMove) mExpMove.innerText = asset.gex.expectedMove;
+}
+
+function updateScGaugeNeedle(needleId, arcId, pct) {
+  const needle = document.getElementById(needleId);
+  const arc = document.getElementById(arcId);
+  if (!needle) return;
+
+  const angle = Math.PI * (1 - pct / 100);
+  const r = 36;
+  const cx = 50, cy = 50;
+  const nx = cx + r * Math.cos(angle);
+  const ny = cy - r * Math.sin(angle);
+
+  needle.setAttribute('x2', nx.toFixed(1));
+  needle.setAttribute('y2', ny.toFixed(1));
+
+  if (arc) {
+    const arcX = cx + 40 * Math.cos(angle);
+    const arcY = cy - 40 * Math.sin(angle);
+    arc.setAttribute('d', `M 10 50 A 40 40 0 0 1 ${arcX.toFixed(1)} ${arcY.toFixed(1)}`);
+  }
+}
+
+function updateScOhlcDisplay(o, h, l, c, chg) {
+  const asset = SUPER_CHARTS_ASSETS[currentScAsset] || SUPER_CHARTS_ASSETS.BTCUSDT;
+  const fmt = (v) => Number(v).toLocaleString(undefined, { minimumFractionDigits: asset.digits, maximumFractionDigits: asset.digits });
+
+  const oEl = document.getElementById('sc-o');
+  const hEl = document.getElementById('sc-h');
+  const lEl = document.getElementById('sc-l');
+  const cEl = document.getElementById('sc-c');
+  const chgEl = document.getElementById('sc-chg');
+
+  if (oEl) oEl.innerText = fmt(o);
+  if (hEl) hEl.innerText = fmt(h);
+  if (lEl) lEl.innerText = fmt(l);
+  if (cEl) cEl.innerText = fmt(c);
+  if (chgEl) {
+    chgEl.innerText = chg || asset.change;
+    chgEl.style.color = (c >= o) ? '#10b981' : '#f43f5e';
+  }
+}
+
+function switchSuperChartsAsset(symbol) {
+  if (!SUPER_CHARTS_ASSETS[symbol]) return;
+  currentScAsset = symbol;
+
+  document.querySelectorAll('.sc-asset-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`sc-btn-${symbol.replace('USDT', '')}`);
+  if (btn) btn.classList.add('active');
+
+  loadSuperChartsAssetData(symbol);
+  renderScMainOverlay();
+  renderScSubPanel();
+}
+
+function switchSuperChartsTf(tf) {
+  currentScTf = tf;
+  document.querySelectorAll('.sc-tf-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-tf') === tf);
+  });
+  loadSuperChartsAssetData(currentScAsset);
+  renderScMainOverlay();
+}
+
+function setDrawingTool(tool, el) {
+  scActiveTool = tool;
+  document.querySelectorAll('.sc-tool-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function toggleAllOverlays(el) {
+  scOverlaysVisible = !scOverlaysVisible;
+  if (el) el.style.opacity = scOverlaysVisible ? '1' : '0.4';
+  renderScMainOverlay();
+}
+
+function renderScMainOverlay() {
+  const tvWrapper = document.getElementById('tv-wrapper');
+  const overlayCanvas = document.getElementById('ai-overlay-canvas');
+  if (!tvWrapper || !overlayCanvas || !scChart || !scCandleSeries || !scLastCandle) return;
+
+  const ctx = overlayCanvas.getContext('2d');
+  const w = tvWrapper.clientWidth;
+  const h = tvWrapper.clientHeight;
+  ctx.clearRect(0, 0, w, h);
+
+  if (!scOverlaysVisible) return;
+
+  const timeScale = scChart.timeScale();
+  const splitX = timeScale.timeToCoordinate(scLastCandle.time);
+  const originY = scCandleSeries.priceToCoordinate(scLastCandle.close);
+  if (splitX === null || originY === null) return;
+
+  const rightAxisWidth = scChart.priceScale('right').width() || 65;
+  const chartRightEdge = w - rightAxisWidth;
+  const coneWidth = Math.max(140, chartRightEdge - splitX);
+  const tailIdx = Math.max(0, scTvData.length - 8);
+  const tailX = timeScale.timeToCoordinate(scTvData[tailIdx].time) || (splitX - 100);
+
+  const asset = SUPER_CHARTS_ASSETS[currentScAsset] || SUPER_CHARTS_ASSETS.BTCUSDT;
+  const chkH = document.getElementById('chk-heatmap');
+  const chkC = document.getElementById('chk-cone');
+  const chkG = document.getElementById('chk-gex');
+  const chkS = document.getElementById('chk-signals');
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, chartRightEdge, h - 26);
+  ctx.clip();
+
+  // A. LIQUIDITY HEATMAP
+  if (chkH && chkH.checked && asset.heatmap) {
+    asset.heatmap.forEach(b => {
+      const y1 = scCandleSeries.priceToCoordinate(b.top);
+      const y2 = scCandleSeries.priceToCoordinate(b.bot);
+      if (y1 !== null && y2 !== null) {
+        const grad = ctx.createLinearGradient(0, y1, 0, y2);
+        grad.addColorStop(0, 'transparent');
+        grad.addColorStop(0.25, b.c1);
+        grad.addColorStop(0.5, b.c2);
+        grad.addColorStop(0.75, b.c1);
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, y1, splitX, y2 - y1);
+      }
+    });
+  }
+
+  // B. PRESENT / FUTURE SPLIT LINE
+  ctx.save();
+  ctx.strokeStyle = 'rgba(226, 232, 240, 0.35)';
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(splitX, 10);
+  ctx.lineTo(splitX, h - 26);
+  ctx.stroke();
+  ctx.restore();
+
+  // Horizon Markers along top & bottom
+  ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
+  ctx.font = '600 9px "JetBrains Mono", monospace';
+  ctx.fillText('PRESENT', splitX - 44, 20);
+  ctx.fillText('24h', splitX + coneWidth * 0.28, 20);
+  ctx.fillText('3d', splitX + coneWidth * 0.58, 20);
+  ctx.fillText('7d', chartRightEdge - 24, 20);
+
+  // C. SIGMOIDAL / BEZIER CURVED AI VOLATILITY CONES
+  if (chkC && chkC.checked && asset.cone) {
+    function drawCurvedEnvelope(upperP, lowerP, curveFactor, fillRgba, borderHex) {
+      const upY = scCandleSeries.priceToCoordinate(upperP);
+      const lowY = scCandleSeries.priceToCoordinate(lowerP);
+      if (upY === null || lowY === null) return;
+
+      ctx.beginPath();
+      ctx.moveTo(tailX, originY);
+      ctx.bezierCurveTo(splitX + coneWidth * curveFactor, originY - 8, splitX + coneWidth * 0.55, upY + 22, chartRightEdge, upY);
+      ctx.lineTo(chartRightEdge, lowY);
+      ctx.bezierCurveTo(splitX + coneWidth * 0.55, lowY - 22, splitX + coneWidth * curveFactor, originY + 8, tailX, originY);
+      ctx.closePath();
+
+      const grad = ctx.createLinearGradient(tailX, 0, chartRightEdge, 0);
+      grad.addColorStop(0, 'transparent');
+      grad.addColorStop(0.3, fillRgba);
+      grad.addColorStop(1, fillRgba);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.save();
+      ctx.strokeStyle = borderHex;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = borderHex;
+      ctx.shadowBlur = 14;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Outer 2-Sigma Cone (Magenta) & Inner 1-Sigma Cone (Cyan)
+    drawCurvedEnvelope(asset.cone.sigma2Upper, asset.cone.sigma2Lower, 0.25, 'rgba(192, 38, 211, 0.22)', '#e879f9');
+    drawCurvedEnvelope(asset.cone.sigma1Upper, asset.cone.sigma1Lower, 0.30, 'rgba(34, 211, 238, 0.28)', '#67e8f9');
+
+    // AI Optimal Path (Golden Spline)
+    const optY = scCandleSeries.priceToCoordinate(asset.cone.optimalPath);
+    if (optY !== null) {
+      ctx.save();
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 2.2;
+      ctx.shadowColor = '#facc15';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(splitX, originY);
+      ctx.bezierCurveTo(splitX + coneWidth * 0.35, originY - 14, splitX + coneWidth * 0.65, optY + 10, chartRightEdge - 8, optY);
+      ctx.stroke();
+
+      // Arrowhead
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.moveTo(chartRightEdge - 4, optY);
+      ctx.lineTo(chartRightEdge - 14, optY - 5);
+      ctx.lineTo(chartRightEdge - 14, optY + 5);
+      ctx.fill();
+      ctx.restore();
+
+      drawScPillBadge(ctx, splitX + coneWidth * 0.45, optY - 18, 'AI OPTIMAL PATH', '#1e1b4b', '#facc15', '#fef08a');
+    }
+
+    // Bullish Breakout Path (Neon Green Dashed)
+    const bullY = scCandleSeries.priceToCoordinate(asset.cone.bullishPath);
+    if (bullY !== null) {
+      ctx.save();
+      ctx.strokeStyle = '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(splitX, originY);
+      ctx.bezierCurveTo(splitX + coneWidth * 0.4, originY - 26, splitX + coneWidth * 0.7, bullY + 16, chartRightEdge - 10, bullY);
+      ctx.stroke();
+      ctx.restore();
+
+      drawScPillBadge(ctx, splitX + coneWidth * 0.16, bullY - 24, `HIGH PROBABILITY BREAKOUT (UP) ✦ ${asset.cone.breakoutProb}`, '#0f172a', '#38bdf8', '#7dd3fc');
+    }
+
+    // Bearish Rejection Path (Crimson Red Dashed)
+    const bearY = scCandleSeries.priceToCoordinate(asset.cone.bearishPath);
+    if (bearY !== null) {
+      ctx.save();
+      ctx.strokeStyle = '#fb7185';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(splitX, originY);
+      ctx.bezierCurveTo(splitX + coneWidth * 0.35, originY + 18, splitX + coneWidth * 0.65, bearY - 14, chartRightEdge - 10, bearY);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // D. GEX WALLS & FLOATING BADGES
+  if (chkG && chkG.checked && asset.gex) {
+    const walls = [
+      { p: asset.gex.callWall, col: '#f43f5e', text: `🟧 CALL WALL (GEX) ${Number(asset.gex.callWall).toLocaleString()}`, bg: 'rgba(127, 29, 29, 0.90)', dy: -25 },
+      { p: asset.gex.zeroGamma, col: '#d946ef', text: `◎ ZERO GAMMA ${Number(asset.gex.zeroGamma).toLocaleString()}`, bg: 'rgba(88, 28, 135, 0.90)', dy: 6 },
+      { p: asset.gex.putWall, col: '#3b82f6', text: `🟦 PUT WALL (GEX) ${Number(asset.gex.putWall).toLocaleString()}`, bg: 'rgba(30, 58, 138, 0.90)', dy: 8 }
+    ];
+
+    walls.forEach(w => {
+      const y = scCandleSeries.priceToCoordinate(w.p);
+      if (y === null) return;
+      ctx.save();
+      ctx.strokeStyle = w.col;
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = w.col;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(chartRightEdge, y);
+      ctx.stroke();
+      ctx.restore();
+      drawScPillBadge(ctx, chartRightEdge - 210, y + w.dy, w.text, w.bg, w.col, '#fff');
+    });
+
+    drawScPillBadge(ctx, chartRightEdge - 200, originY - 22, '⚡ EXPECTED MOVE (7D)', 'rgba(15, 23, 42, 0.92)', '#22d3ee', '#ecfeff');
+  }
+
+  // E. SMART PATTERN CALLOUTS
+  if (chkS && chkS.checked && asset.patterns) {
+    const swIdx = asset.patterns.sweepIdx || 15;
+    if (scTvData[swIdx]) {
+      const sweepX = timeScale.timeToCoordinate(scTvData[swIdx].time);
+      const sweepY = scCandleSeries.priceToCoordinate(scTvData[swIdx].high);
+      if (sweepX && sweepY) {
+        ctx.fillStyle = '#5eead4';
+        ctx.font = '700 10px Inter, sans-serif';
+        ctx.fillText('▲ AI LIQUIDITY SWEEP DETECTED', sweepX - 40, sweepY - 10);
+      }
+    }
+
+    const fvgIdx = asset.patterns.fvgIdx || 19;
+    if (scTvData[fvgIdx]) {
+      const fvgX = timeScale.timeToCoordinate(scTvData[fvgIdx].time);
+      const fvgY = scCandleSeries.priceToCoordinate(scTvData[fvgIdx].low);
+      if (fvgX && fvgY) {
+        ctx.fillStyle = '#67e8f9';
+        ctx.font = '700 10px Inter, sans-serif';
+        ctx.fillText('▼ FAIR VALUE GAP (FVG)', fvgX - 45, fvgY + 18);
+      }
+    }
+  }
+
+  ctx.restore();
+}
+
+function renderScSubPanel() {
+  const subWrapper = document.getElementById('subpanel-wrapper');
+  const subCanvas = document.getElementById('subpanel-canvas');
+  if (!subWrapper || !subCanvas) return;
+
+  const subCtx = subCanvas.getContext('2d');
+  const w = subWrapper.clientWidth;
+  const h = subWrapper.clientHeight;
+  subCtx.clearRect(0, 0, w, h);
+
+  const rightAxisWidth = (scChart && scChart.priceScale('right').width()) || 65;
+  const endX = w - rightAxisWidth;
+  const midY = h * 0.54;
+  const splitX = (scChart && scLastCandle && scChart.timeScale().timeToCoordinate(scLastCandle.time)) || (endX * 0.58);
+
+  // Title
+  subCtx.fillStyle = '#cbd5e1';
+  subCtx.font = '600 10px Inter, sans-serif';
+  subCtx.fillText('AI CONFLUENCE SCORE & VOLATILITY SPREAD', 14, 18);
+
+  // Zero Line
+  subCtx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+  subCtx.setLineDash([2, 3]);
+  subCtx.beginPath();
+  subCtx.moveTo(0, midY);
+  subCtx.lineTo(endX, midY);
+  subCtx.stroke();
+  subCtx.setLineDash([]);
+
+  // Histogram Bars
+  const waveEnd = Math.min(endX - 20, splitX + 130);
+  for (let x = 12; x < waveEnd; x += 5) {
+    const norm = x / waveEnd;
+    const dist = Math.abs(x - (splitX + 20));
+    const spike = dist < 26 ? (1 - dist / 26) * (h * 0.4) : 0;
+    const val = Math.sin(norm * 18 + scPhase) * Math.cos(norm * 7) * (h * 0.34) - spike;
+    subCtx.fillStyle = val < 0 ? 'rgba(56, 189, 248, 0.35)' : 'rgba(244, 63, 94, 0.35)';
+    subCtx.fillRect(x, midY, 2.5, val);
+  }
+
+  // Glowing Spline Wave
+  subCtx.save();
+  subCtx.strokeStyle = '#22d3ee';
+  subCtx.lineWidth = 2;
+  subCtx.shadowColor = '#06b6d4';
+  subCtx.shadowBlur = 8;
+  subCtx.beginPath();
+  for (let x = 12; x < waveEnd; x += 3) {
+    const norm = x / waveEnd;
+    const dist = Math.abs(x - (splitX + 20));
+    const spike = dist < 26 ? (1 - dist / 26) * (h * 0.42) : 0;
+    const y = midY + Math.sin(norm * 18 + scPhase) * Math.cos(norm * 7) * (h * 0.32) - spike;
+    if (x === 12) subCtx.moveTo(x, y);
+    else subCtx.lineTo(x, y);
+  }
+  subCtx.stroke();
+  subCtx.restore();
+
+  // Callout Labels
+  subCtx.fillStyle = '#fb7185';
+  subCtx.font = 'bold 10px Inter, sans-serif';
+  subCtx.fillText('SQUEEZE RISK', 140, 34);
+  subCtx.fillText('VOLATILITY SPIKE ALERT', splitX + 38, 32);
+
+  // Axis text
+  subCtx.fillStyle = '#64748b';
+  subCtx.font = '10px "JetBrains Mono", monospace';
+  subCtx.fillText('+100', endX + 10, 22);
+  subCtx.fillText('0', endX + 10, midY + 3);
+  subCtx.fillText('-100', endX + 10, h - 10);
+}
+
+function resizeSuperCharts() {
+  const tvWrapper = document.getElementById('tv-wrapper');
+  const overlayCanvas = document.getElementById('ai-overlay-canvas');
+  const subWrapper = document.getElementById('subpanel-wrapper');
+  const subCanvas = document.getElementById('subpanel-canvas');
+  if (!tvWrapper || !overlayCanvas || !subWrapper || !subCanvas) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const w = tvWrapper.clientWidth;
+  const h = tvWrapper.clientHeight;
+
+  if (scChart && w > 0 && h > 0) {
+    scChart.applyOptions({ width: w, height: h });
+  }
+
+  overlayCanvas.width = w * dpr;
+  overlayCanvas.height = h * dpr;
+  const ctx = overlayCanvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const subW = subWrapper.clientWidth;
+  const subH = subWrapper.clientHeight;
+  subCanvas.width = subW * dpr;
+  subCanvas.height = subH * dpr;
+  const subCtx = subCanvas.getContext('2d');
+  subCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  renderScMainOverlay();
+  renderScSubPanel();
+}
+
+function animateScLoop() {
+  scPhase += 0.02;
+  renderScSubPanel();
+  renderScMainOverlay();
+  requestAnimationFrame(animateScLoop);
+}
+
+// =========================================================
+// NAVIGATION & VIEW SWITCHING
+// =========================================================
+
+function showSuperCharts(event) {
+  if (event) {
+    event.preventDefault();
+  }
+  // Redirect to TradingView BTCUSDT chart
+  try {
+    const win = window.open("https://www.tradingview.com/chart/CdX1vW1h/", "_blank");
+    if (!win || win.closed || typeof win.closed === "undefined") {
+      window.location.href = "https://www.tradingview.com/chart/CdX1vW1h/";
+    }
+  } catch (e) {
+    window.location.href = "https://www.tradingview.com/chart/CdX1vW1h/";
   }
 }
 
 function showDashboardHome(event) {
   if (event) event.preventDefault();
+  if (window.location.pathname === "/options-signals" || window.location.pathname === "/gamma-map" || window.location.pathname === "/algo-levels" || window.location.pathname === "/super-charts") {
+    history.pushState(null, "", "/");
+  }
+  if (quantTimerInterval) clearInterval(quantTimerInterval);
+  if (gammaMapTimerInterval) clearInterval(gammaMapTimerInterval);
+  if (algoTimerInterval) clearInterval(algoTimerInterval);
   
   // Hide data elements
   document.getElementById("tickerBar").style.display = "none";
   document.querySelector("main").style.display = "none";
   
+  const optView = document.getElementById("optionsView");
+  if (optView) optView.style.display = "none";
+
+  const scView = document.getElementById("superChartsView");
+  if (scView) scView.style.display = "none";
+
+  const signalsView = document.getElementById("aiSignalsView");
+  if (signalsView) signalsView.style.display = "none";
+
+  const gmapView = document.getElementById("gammaMapView");
+  if (gmapView) gmapView.style.display = "none";
+
+  const algoView = document.getElementById("algoLevelsView");
+  if (algoView) algoView.style.display = "none";
+
   // Show background image container and make overlay light (active-home)
   const bgEl = document.getElementById("dashboardBg");
   bgEl.style.display = "block";
   bgEl.offsetHeight; // reflow
   bgEl.classList.add("active-home");
   
-  // Set header to a beautiful, glassmorphic semi-transparent background to match the screenshot
   const header = document.querySelector("header");
   header.style.backgroundColor = "rgba(9, 5, 20, 0.75)";
   header.style.backdropFilter = "blur(12px)";
   header.style.webkitBackdropFilter = "blur(12px)";
-  header.style.borderBottomColor = "rgba(46, 31, 77, 0.5)"; // deep violet subtle border
+  header.style.borderBottomColor = "rgba(46, 31, 77, 0.5)";
   
-  // Add active state to home icon
   document.querySelector(".home-icon").classList.add("active");
   document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
 }
 
 function showOptionsChain() {
+  if (window.location.pathname === "/options-signals" || window.location.pathname === "/gamma-map" || window.location.pathname === "/algo-levels" || window.location.pathname === "/super-charts") {
+    history.pushState(null, "", "/");
+  }
+  if (quantTimerInterval) clearInterval(quantTimerInterval);
+  if (gammaMapTimerInterval) clearInterval(gammaMapTimerInterval);
+  if (algoTimerInterval) clearInterval(algoTimerInterval);
+
   // Hide background image container
   const bgEl = document.getElementById("dashboardBg");
   bgEl.classList.remove("active-home");
@@ -1315,6 +4845,18 @@ function showOptionsChain() {
   
   // Restore chart/metrics visibility
   document.getElementById("superChartsView").style.display = "none";
+  const signalsView = document.getElementById("aiSignalsView");
+  if (signalsView) signalsView.style.display = "none";
+
+  const gmapView = document.getElementById("gammaMapView");
+  if (gmapView) gmapView.style.display = "none";
+
+  const algoView = document.getElementById("algoLevelsView");
+  if (algoView) algoView.style.display = "none";
+
+  const optView = document.getElementById("optionsView");
+  if (optView) optView.style.display = "block";
+
   document.getElementById("metrics").style.display = "flex";
   const tabsContainer = document.getElementById("tabs").parentNode;
   if (tabsContainer) tabsContainer.style.display = "block";
@@ -1330,6 +4872,177 @@ function showOptionsChain() {
   // Update nav active states
   document.querySelector(".home-icon").classList.remove("active");
   document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
+  const optionsTab = document.getElementById("optionsTab");
+  if (optionsTab) optionsTab.classList.add("active");
+}
+
+function showAiSignals(event) {
+  if (event) {
+    event.preventDefault();
+    if (window.location.pathname !== "/options-signals") {
+      history.pushState(null, "", "/options-signals");
+    }
+  }
+  if (gammaMapTimerInterval) clearInterval(gammaMapTimerInterval);
+  if (algoTimerInterval) clearInterval(algoTimerInterval);
+
+  // Hide background image container
+  const bgEl = document.getElementById("dashboardBg");
+  if (bgEl) {
+    bgEl.classList.remove("active-home");
+    bgEl.style.display = "none";
+  }
+
+  // Show data elements
+  document.getElementById("tickerBar").style.display = "flex";
+  document.querySelector("main").style.display = "block";
+
+  // Hide other main views
+  const optView = document.getElementById("optionsView");
+  if (optView) optView.style.display = "none";
+
+  document.getElementById("superChartsView").style.display = "none";
+  document.getElementById("metrics").style.display = "none";
+  const tabsContainer = document.getElementById("tabs").parentNode;
+  if (tabsContainer) tabsContainer.style.display = "none";
+  document.getElementById("tableWrap").style.display = "none";
+  const gmapView = document.getElementById("gammaMapView");
+  if (gmapView) gmapView.style.display = "none";
+
+  const algoView = document.getElementById("algoLevelsView");
+  if (algoView) algoView.style.display = "none";
+
+  // Show AI Signals View
+  const signalsView = document.getElementById("aiSignalsView");
+  if (signalsView) signalsView.style.display = "block";
+
+  // Restore header styles
+  const header = document.querySelector("header");
+  header.style.backgroundColor = "var(--bg-panel)";
+  header.style.backdropFilter = "none";
+  header.style.webkitBackdropFilter = "none";
+  header.style.borderBottomColor = "var(--border-color)";
+
+  // Update nav active states
+  document.querySelector(".home-icon").classList.remove("active");
+  document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
+  const aiTab = document.getElementById("aiSignalsTab");
+  if (aiTab) aiTab.classList.add("active");
+
+  fetchQuantSignal();
+}
+
+function showGammaMap(event) {
+  if (event) {
+    event.preventDefault();
+    if (window.location.pathname !== "/gamma-map") {
+      history.pushState(null, "", "/gamma-map");
+    }
+  }
+  if (quantTimerInterval) clearInterval(quantTimerInterval);
+  if (algoTimerInterval) clearInterval(algoTimerInterval);
+
+  // Hide background image container
+  const bgEl = document.getElementById("dashboardBg");
+  if (bgEl) {
+    bgEl.classList.remove("active-home");
+    bgEl.style.display = "none";
+  }
+
+  // Show data elements
+  document.getElementById("tickerBar").style.display = "flex";
+  document.querySelector("main").style.display = "block";
+
+  // Hide other views
+  const optView = document.getElementById("optionsView");
+  if (optView) optView.style.display = "none";
+
+  document.getElementById("superChartsView").style.display = "none";
+  document.getElementById("metrics").style.display = "none";
+  const tabsContainer = document.getElementById("tabs").parentNode;
+  if (tabsContainer) tabsContainer.style.display = "none";
+  document.getElementById("tableWrap").style.display = "none";
+  const signalsView = document.getElementById("aiSignalsView");
+  if (signalsView) signalsView.style.display = "none";
+
+  const algoView = document.getElementById("algoLevelsView");
+  if (algoView) algoView.style.display = "none";
+
+  // Show Gamma Map View
+  const gmapView = document.getElementById("gammaMapView");
+  if (gmapView) gmapView.style.display = "block";
+
+  // Restore header styles
+  const header = document.querySelector("header");
+  header.style.backgroundColor = "var(--bg-panel)";
+  header.style.backdropFilter = "none";
+  header.style.webkitBackdropFilter = "none";
+  header.style.borderBottomColor = "var(--border-color)";
+
+  // Update nav active states
+  document.querySelector(".home-icon").classList.remove("active");
+  document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
+  const gmapTab = document.getElementById("gammaMapTab");
+  if (gmapTab) gmapTab.classList.add("active");
+
+  fetchGammaMapData();
+}
+
+function showAlgoLevels(event) {
+  if (event) {
+    event.preventDefault();
+    if (window.location.pathname !== "/algo-levels") {
+      history.pushState(null, "", "/algo-levels");
+    }
+  }
+  if (quantTimerInterval) clearInterval(quantTimerInterval);
+  if (gammaMapTimerInterval) clearInterval(gammaMapTimerInterval);
+
+  // Hide background image container
+  const bgEl = document.getElementById("dashboardBg");
+  if (bgEl) {
+    bgEl.classList.remove("active-home");
+    bgEl.style.display = "none";
+  }
+
+  // Show data elements
+  document.getElementById("tickerBar").style.display = "flex";
+  document.querySelector("main").style.display = "block";
+
+  // Hide other views
+  const optView = document.getElementById("optionsView");
+  if (optView) optView.style.display = "none";
+
+  document.getElementById("superChartsView").style.display = "none";
+  document.getElementById("metrics").style.display = "none";
+  const tabsContainer = document.getElementById("tabs").parentNode;
+  if (tabsContainer) tabsContainer.style.display = "none";
+  document.getElementById("tableWrap").style.display = "none";
+  
+  const signalsView = document.getElementById("aiSignalsView");
+  if (signalsView) signalsView.style.display = "none";
+
+  const gmapView = document.getElementById("gammaMapView");
+  if (gmapView) gmapView.style.display = "none";
+
+  // Show Algo Levels View
+  const algoView = document.getElementById("algoLevelsView");
+  if (algoView) algoView.style.display = "block";
+
+  // Restore header styles
+  const header = document.querySelector("header");
+  header.style.backgroundColor = "var(--bg-panel)";
+  header.style.backdropFilter = "none";
+  header.style.webkitBackdropFilter = "none";
+  header.style.borderBottomColor = "var(--border-color)";
+
+  // Update nav active states
+  document.querySelector(".home-icon").classList.remove("active");
+  document.querySelectorAll(".nav-link").forEach(el => el.classList.remove("active"));
+  const algoTab = document.getElementById("algoLevelsTab");
+  if (algoTab) algoTab.classList.add("active");
+
+  fetchAlgoSignals();
 }
 
 async function refreshAll() {
@@ -1346,9 +5059,47 @@ loadUser();
 refreshAll();
 updateTickerPrices();
 
+// Check if direct link to Super Charts, Algo Levels, Gamma Map, or AI signals
+if (window.location.pathname === "/super-charts" || window.location.hash === "#super-charts" || window.location.hash === "#charts") {
+  window.location.href = "https://www.tradingview.com/chart/CdX1vW1h/";
+} else if (window.location.pathname === "/algo-levels" || window.location.hash === "#algo-levels") {
+  showAlgoLevels();
+} else if (window.location.pathname === "/gamma-map" || window.location.hash === "#gamma-map") {
+  showGammaMap();
+} else if (window.location.pathname === "/options-signals" || window.location.hash === "#signals") {
+  showAiSignals();
+} else {
+  const optTab = document.getElementById("optionsTab");
+  if (optTab) optTab.classList.add("active");
+}
+
+// Handle Browser History Back / Forward
+window.addEventListener("popstate", () => {
+  if (window.location.pathname === "/super-charts") {
+    window.location.href = "https://www.tradingview.com/chart/CdX1vW1h/";
+  } else if (window.location.pathname === "/algo-levels") {
+    showAlgoLevels();
+  } else if (window.location.pathname === "/gamma-map") {
+    showGammaMap();
+  } else if (window.location.pathname === "/options-signals") {
+    showAiSignals();
+  } else {
+    showOptionsChain();
+  }
+});
+
 // Set Polling
 setInterval(refreshAll, 15000);
 setInterval(updateTickerPrices, 5000); // Tickers update every 5 seconds
+window.addEventListener("resize", () => {
+  const scView = document.getElementById("superChartsView");
+  if (scView && scView.style.display !== "none") {
+    resizeSuperCharts();
+  }
+  if (document.getElementById("aiSignalsView").style.display !== "none") {
+    renderQuantChart();
+  }
+});
 </script>
 
 </body>

@@ -39,6 +39,10 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from delta_chain_core import build_option_chain, UNDERLYING, acquire_single_instance_lock
 from auth import router as auth_router, init_auth_db, get_current_user_optional, SESSION_SECRET
+from btc_options_signal_engine import router as options_signal_router
+from gamma_exposure_map import router as gamma_map_router
+from algo_trade_levels import router as algo_trade_router
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("delta-chain")
@@ -88,6 +92,9 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
 
 app.include_router(auth_router)
+app.include_router(options_signal_router)
+app.include_router(gamma_map_router)
+app.include_router(algo_trade_router)
 
 
 @app.get("/api/status")
@@ -128,3 +135,33 @@ def index(request: Request):
     if not user:
         return FileResponse("static/landing.html")
     return FileResponse("static/index.html")
+
+
+@app.get("/super-charts")
+def super_charts_page(request: Request):
+    return RedirectResponse("https://www.tradingview.com/chart/CdX1vW1h/")
+
+
+@app.get("/options-signals")
+def options_signals_page(request: Request):
+    user = get_current_user_optional(request)
+    if not user:
+        return FileResponse("static/landing.html")
+    return FileResponse("static/index.html")
+
+
+@app.get("/gamma-map")
+def gamma_map_page(request: Request):
+    user = get_current_user_optional(request)
+    if not user:
+        return FileResponse("static/landing.html")
+    return FileResponse("static/index.html")
+
+
+@app.get("/algo-levels")
+def algo_levels_page(request: Request):
+    user = get_current_user_optional(request)
+    if not user:
+        return FileResponse("static/landing.html")
+    return FileResponse("static/index.html")
+
